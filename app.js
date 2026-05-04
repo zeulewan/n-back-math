@@ -2,6 +2,7 @@ const elements = {
   inlineNLabel: document.getElementById("inline-n-label"),
   phaseBadge: document.getElementById("phase-badge"),
   problemDisplay: document.getElementById("problem-display"),
+  timerFill: document.getElementById("timer-fill"),
   screenPrompt: document.getElementById("screen-prompt"),
   answerValue: document.getElementById("answer-value"),
   roundCount: document.getElementById("round-count"),
@@ -49,6 +50,7 @@ const state = {
   missed: 0,
   streak: 0,
   timers: [],
+  timerAnimation: null,
 };
 
 function init() {
@@ -148,6 +150,7 @@ function syncSettingsFromControls() {
 
 function startGame() {
   clearAllTimers();
+  stopTimerBar();
   state.settingsOpen = false;
   syncSettingsFromControls();
 
@@ -165,7 +168,7 @@ function startGame() {
   state.missed = 0;
   state.streak = 0;
 
-  setProblem(`${state.nBack}`);
+  setProblem("Ready");
   setPrompt(`Answering starts after ${state.nBack} prompt${state.nBack === 1 ? "" : "s"}.`);
   render();
 
@@ -175,6 +178,7 @@ function startGame() {
 function resetGame() {
   clearAllTimers();
   state.gameActive = false;
+  stopTimerBar();
   state.acceptingAnswer = false;
   state.settingsOpen = false;
   state.phase = "idle";
@@ -211,6 +215,7 @@ function nextRound() {
 
   const visibleProblem = formatProblem(state.currentProblem);
   setProblem(visibleProblem, true);
+  startTimerBar(state.answerMs);
 
   if (state.displayStep <= state.nBack) {
     state.phase = "memorize";
@@ -302,6 +307,7 @@ function submitAnswer(fromTimeout) {
   }
 
   clearAllTimers();
+  stopTimerBar();
   state.acceptingAnswer = false;
   state.answeredQuestions += 1;
   state.round = state.answeredQuestions;
@@ -313,21 +319,22 @@ function submitAnswer(fromTimeout) {
   if (isCorrect) {
     state.correct += 1;
     state.streak += 1;
-    setPrompt(`Correct. ${formatProblem(state.currentTarget)} = ${state.currentTarget.answer}.`);
+    setPrompt("Correct.");
+    setProblem("✓");
     pulseKey("OK", "correct");
   } else {
     state.missed += 1;
     state.streak = 0;
     if (fromTimeout || parsed === null) {
-      setPrompt(`Time. ${formatProblem(state.currentTarget)} = ${state.currentTarget.answer}.`);
+      setPrompt("Time's up.");
     } else {
-      setPrompt(`Nope. ${formatProblem(state.currentTarget)} = ${state.currentTarget.answer}.`);
+      setPrompt("Incorrect.");
       pulseKey("OK", "wrong");
     }
+    setProblem("✕");
   }
 
   state.phase = "feedback";
-  setProblem(String(state.currentTarget.answer));
   render();
   queue(nextRound, 900);
 }
@@ -336,6 +343,7 @@ function finishGame() {
   state.gameActive = false;
   state.acceptingAnswer = false;
   state.phase = "finished";
+  stopTimerBar();
   setProblem("✓");
 
   const accuracy = state.answeredQuestions
@@ -357,6 +365,27 @@ function queue(callback, delay) {
 function clearAllTimers() {
   state.timers.forEach((timer) => window.clearTimeout(timer));
   state.timers = [];
+}
+
+function startTimerBar(duration) {
+  stopTimerBar();
+  elements.timerFill.style.transition = "none";
+  elements.timerFill.style.transform = "scaleX(1)";
+
+  state.timerAnimation = window.requestAnimationFrame(() => {
+    elements.timerFill.style.transition = `transform ${duration}ms linear`;
+    elements.timerFill.style.transform = "scaleX(0)";
+    state.timerAnimation = null;
+  });
+}
+
+function stopTimerBar() {
+  if (state.timerAnimation !== null) {
+    window.cancelAnimationFrame(state.timerAnimation);
+    state.timerAnimation = null;
+  }
+  elements.timerFill.style.transition = "none";
+  elements.timerFill.style.transform = state.gameActive ? "scaleX(0)" : "scaleX(1)";
 }
 
 function setProblem(value, flash = false) {

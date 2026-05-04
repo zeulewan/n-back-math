@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
     <title>N-Back Math</title>
     <link rel="stylesheet" href="style.css">
   </head>
@@ -35,6 +35,9 @@
             <span id="phase-badge">Idle</span>
           </div>
           <div class="screen">
+            <div class="timer-track" aria-hidden="true">
+              <div class="timer-fill" id="timer-fill"></div>
+            </div>
             <div class="problem-display" id="problem-display">-</div>
             <p class="screen-prompt" id="screen-prompt">Press start when you’re ready.</p>
           </div>
@@ -48,10 +51,6 @@
 
           <div class="answer-value empty" id="answer-value">0</div>
           <div class="keypad" id="keypad"></div>
-
-          <p class="footer-note">
-            Keyboard works too: digits to enter, <code>Backspace</code> to delete, <code>Enter</code> to submit.
-          </p>
         </section>
       </section>
 
