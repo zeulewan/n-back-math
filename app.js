@@ -1,0 +1,442 @@
+const elements = {
+  inlineNLabel: document.getElementById("inline-n-label"),
+  phaseBadge: document.getElementById("phase-badge"),
+  problemDisplay: document.getElementById("problem-display"),
+  screenPrompt: document.getElementById("screen-prompt"),
+  answerValue: document.getElementById("answer-value"),
+  roundCount: document.getElementById("round-count"),
+  questionCount: document.getElementById("question-count"),
+  correctCount: document.getElementById("correct-count"),
+  missedCount: document.getElementById("missed-count"),
+  accuracyCount: document.getElementById("accuracy-count"),
+  streakCount: document.getElementById("streak-count"),
+  resultsPhase: document.getElementById("results-phase"),
+  answerInstruction: document.getElementById("answer-instruction"),
+  keypad: document.getElementById("keypad"),
+  startButton: document.getElementById("start-btn"),
+  resetButton: document.getElementById("reset-btn"),
+  settingsButton: document.getElementById("settings-btn"),
+  closeSettingsButton: document.getElementById("close-settings-btn"),
+  settingsSheet: document.getElementById("settings-sheet"),
+  settingsScrim: document.getElementById("settings-scrim"),
+  nLevel: document.getElementById("n-level"),
+  rounds: document.getElementById("rounds"),
+  answerMs: document.getElementById("answer-ms"),
+  operatorMode: document.getElementById("operator-mode"),
+  digitMax: document.getElementById("digit-max"),
+};
+
+const KEY_LAYOUT = ["1", "2", "3", "DEL", "4", "5", "6", "CLR", "7", "8", "9", "OK", "0"];
+
+const state = {
+  gameActive: false,
+  acceptingAnswer: false,
+  settingsOpen: false,
+  phase: "idle",
+  nBack: 1,
+  totalRounds: 15,
+  answerMs: 3500,
+  operatorMode: "add",
+  digitMax: 9,
+  displayStep: 0,
+  round: 0,
+  problems: [],
+  currentProblem: null,
+  currentTarget: null,
+  currentAnswer: "",
+  answeredQuestions: 0,
+  correct: 0,
+  missed: 0,
+  streak: 0,
+  timers: [],
+};
+
+function init() {
+  buildKeypad();
+  bindEvents();
+  syncSettingsFromControls();
+  render();
+}
+
+function buildKeypad() {
+  KEY_LAYOUT.forEach((token) => {
+    elements.keypad.append(createKey(token));
+  });
+}
+
+function createKey(token) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "key";
+  button.dataset.value = token;
+  button.textContent = token;
+  button.disabled = true;
+
+  if (token === "OK") {
+    button.classList.add("submit");
+    button.addEventListener("click", () => submitAnswer(false));
+  } else if (token === "CLR") {
+    button.classList.add("action");
+    button.addEventListener("click", clearAnswer);
+  } else if (token === "DEL") {
+    button.classList.add("action");
+    button.addEventListener("click", deleteDigit);
+  } else {
+    button.addEventListener("click", () => appendDigit(token));
+  }
+
+  return button;
+}
+
+function bindEvents() {
+  elements.startButton.addEventListener("click", startGame);
+  elements.resetButton.addEventListener("click", resetGame);
+  elements.settingsButton.addEventListener("click", toggleSettings);
+  elements.closeSettingsButton.addEventListener("click", closeSettings);
+  elements.settingsScrim.addEventListener("click", closeSettings);
+
+  [elements.nLevel, elements.rounds, elements.answerMs, elements.operatorMode, elements.digitMax].forEach((control) => {
+    control.addEventListener("change", () => {
+      syncSettingsFromControls();
+      render();
+    });
+  });
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && state.settingsOpen) {
+      closeSettings();
+      return;
+    }
+
+    if (!state.acceptingAnswer) {
+      return;
+    }
+
+    if (/^[0-9]$/.test(event.key)) {
+      appendDigit(event.key);
+      return;
+    }
+
+    if (event.key === "Backspace") {
+      deleteDigit();
+      return;
+    }
+
+    if (event.key === "Enter") {
+      submitAnswer(false);
+    }
+  });
+}
+
+function toggleSettings() {
+  state.settingsOpen = !state.settingsOpen;
+  render();
+}
+
+function closeSettings() {
+  state.settingsOpen = false;
+  render();
+}
+
+function syncSettingsFromControls() {
+  state.nBack = Number(elements.nLevel.value);
+  state.totalRounds = Number(elements.rounds.value);
+  state.answerMs = Number(elements.answerMs.value);
+  state.operatorMode = elements.operatorMode.value === "mixed" ? "mixed" : "add";
+  state.digitMax = Number(elements.digitMax.value);
+}
+
+function startGame() {
+  clearAllTimers();
+  state.settingsOpen = false;
+  syncSettingsFromControls();
+
+  state.gameActive = true;
+  state.acceptingAnswer = false;
+  state.phase = "ready";
+  state.displayStep = 0;
+  state.round = 0;
+  state.problems = [];
+  state.currentProblem = null;
+  state.currentTarget = null;
+  state.currentAnswer = "";
+  state.answeredQuestions = 0;
+  state.correct = 0;
+  state.missed = 0;
+  state.streak = 0;
+
+  setProblem(`${state.nBack}`);
+  setPrompt(`Answering starts after ${state.nBack} prompt${state.nBack === 1 ? "" : "s"}.`);
+  render();
+
+  queue(nextRound, 700);
+}
+
+function resetGame() {
+  clearAllTimers();
+  state.gameActive = false;
+  state.acceptingAnswer = false;
+  state.settingsOpen = false;
+  state.phase = "idle";
+  state.displayStep = 0;
+  state.round = 0;
+  state.problems = [];
+  state.currentProblem = null;
+  state.currentTarget = null;
+  state.currentAnswer = "";
+  state.answeredQuestions = 0;
+  state.correct = 0;
+  state.missed = 0;
+  state.streak = 0;
+
+  setProblem("-");
+  setPrompt("Press start when you’re ready.");
+  clearKeyFeedback();
+  render();
+}
+
+function nextRound() {
+  clearKeyFeedback();
+
+  if (state.answeredQuestions >= state.totalRounds) {
+    finishGame();
+    return;
+  }
+
+  state.displayStep += 1;
+  state.currentAnswer = "";
+  state.currentProblem = buildProblem();
+  state.problems.push(state.currentProblem);
+  state.currentTarget = null;
+
+  const visibleProblem = formatProblem(state.currentProblem);
+  setProblem(visibleProblem, true);
+
+  if (state.displayStep <= state.nBack) {
+    state.phase = "memorize";
+    state.acceptingAnswer = false;
+
+    const promptsUntilAnswer = state.nBack - state.displayStep;
+    if (promptsUntilAnswer > 0) {
+      setPrompt(`Watch this. Answering starts in ${promptsUntilAnswer} more prompt${promptsUntilAnswer === 1 ? "" : "s"}.`);
+    } else {
+      setPrompt("Watch this. The next prompt is the first answer round.");
+    }
+
+    render();
+    queue(nextRound, state.answerMs);
+    return;
+  }
+
+  state.phase = "answering";
+  state.acceptingAnswer = true;
+  state.currentTarget = state.problems[state.displayStep - state.nBack - 1];
+  state.round = state.answeredQuestions + 1;
+
+  setPrompt(`While viewing ${visibleProblem}, answer the ${state.nBack}-back problem.`);
+  render();
+  queue(() => submitAnswer(true), state.answerMs);
+}
+
+function buildProblem() {
+  const left = randomInt(state.digitMax);
+  const right = randomInt(state.digitMax);
+
+  if (state.operatorMode === "mixed" && Math.random() < 0.5) {
+    const high = Math.max(left, right);
+    const low = Math.min(left, right);
+    return {
+      left: high,
+      operator: "-",
+      right: low,
+      answer: high - low,
+    };
+  }
+
+  return {
+    left,
+    operator: "+",
+    right,
+    answer: left + right,
+  };
+}
+
+function randomInt(max) {
+  return Math.floor(Math.random() * (max + 1));
+}
+
+function formatProblem(problem) {
+  return `${problem.left} ${problem.operator} ${problem.right}`;
+}
+
+function appendDigit(digit) {
+  if (!state.acceptingAnswer) {
+    return;
+  }
+  if (state.currentAnswer.length >= 2) {
+    return;
+  }
+  state.currentAnswer += digit;
+  render();
+}
+
+function deleteDigit() {
+  if (!state.acceptingAnswer) {
+    return;
+  }
+  state.currentAnswer = state.currentAnswer.slice(0, -1);
+  render();
+}
+
+function clearAnswer() {
+  if (!state.acceptingAnswer) {
+    return;
+  }
+  state.currentAnswer = "";
+  render();
+}
+
+function submitAnswer(fromTimeout) {
+  if (!state.acceptingAnswer || !state.currentTarget) {
+    return;
+  }
+
+  clearAllTimers();
+  state.acceptingAnswer = false;
+  state.answeredQuestions += 1;
+  state.round = state.answeredQuestions;
+
+  const raw = state.currentAnswer.trim();
+  const parsed = raw === "" ? null : Number(raw);
+  const isCorrect = parsed === state.currentTarget.answer;
+
+  if (isCorrect) {
+    state.correct += 1;
+    state.streak += 1;
+    setPrompt(`Correct. ${formatProblem(state.currentTarget)} = ${state.currentTarget.answer}.`);
+    pulseKey("OK", "correct");
+  } else {
+    state.missed += 1;
+    state.streak = 0;
+    if (fromTimeout || parsed === null) {
+      setPrompt(`Time. ${formatProblem(state.currentTarget)} = ${state.currentTarget.answer}.`);
+    } else {
+      setPrompt(`Nope. ${formatProblem(state.currentTarget)} = ${state.currentTarget.answer}.`);
+      pulseKey("OK", "wrong");
+    }
+  }
+
+  state.phase = "feedback";
+  setProblem(String(state.currentTarget.answer));
+  render();
+  queue(nextRound, 900);
+}
+
+function finishGame() {
+  state.gameActive = false;
+  state.acceptingAnswer = false;
+  state.phase = "finished";
+  setProblem("✓");
+
+  const accuracy = state.answeredQuestions
+    ? Math.round((state.correct / state.answeredQuestions) * 100)
+    : 0;
+
+  setPrompt(`Run complete. ${state.correct} right out of ${state.answeredQuestions}, ${accuracy}% accuracy.`);
+  render();
+}
+
+function queue(callback, delay) {
+  const timer = window.setTimeout(() => {
+    state.timers = state.timers.filter((id) => id !== timer);
+    callback();
+  }, delay);
+  state.timers.push(timer);
+}
+
+function clearAllTimers() {
+  state.timers.forEach((timer) => window.clearTimeout(timer));
+  state.timers = [];
+}
+
+function setProblem(value, flash = false) {
+  elements.problemDisplay.textContent = value;
+  elements.problemDisplay.classList.toggle("flash", false);
+  if (flash) {
+    requestAnimationFrame(() => {
+      elements.problemDisplay.classList.add("flash");
+    });
+  }
+}
+
+function setPrompt(text) {
+  elements.screenPrompt.textContent = text;
+  elements.answerInstruction.textContent = text;
+}
+
+function pulseKey(value, className) {
+  const key = elements.keypad.querySelector(`[data-value="${value}"]`);
+  if (!key) {
+    return;
+  }
+  key.classList.add(className);
+}
+
+function clearKeyFeedback() {
+  elements.keypad.querySelectorAll(".key").forEach((button) => {
+    button.classList.remove("correct", "wrong");
+  });
+}
+
+function render() {
+  const accuracy = state.answeredQuestions
+    ? Math.round((state.correct / state.answeredQuestions) * 100)
+    : 0;
+
+  document.body.classList.toggle("playing", state.gameActive);
+  elements.inlineNLabel.textContent = String(state.nBack);
+  elements.phaseBadge.textContent = prettyPhase(state.phase);
+  elements.roundCount.textContent = `${state.round} / ${state.totalRounds}`;
+  elements.questionCount.textContent = String(state.answeredQuestions);
+  elements.correctCount.textContent = String(state.correct);
+  elements.missedCount.textContent = String(state.missed);
+  elements.accuracyCount.textContent = `${accuracy}%`;
+  elements.streakCount.textContent = String(state.streak);
+  elements.resultsPhase.textContent = prettyPhase(state.phase);
+
+  const visibleAnswer = state.currentAnswer === "" ? "0" : state.currentAnswer;
+  elements.answerValue.textContent = visibleAnswer;
+  elements.answerValue.classList.toggle("empty", state.currentAnswer === "");
+
+  [elements.nLevel, elements.rounds, elements.answerMs, elements.operatorMode, elements.digitMax].forEach((control) => {
+    control.disabled = state.gameActive;
+  });
+
+  elements.startButton.disabled = state.gameActive;
+  elements.settingsButton.setAttribute("aria-expanded", String(state.settingsOpen));
+  elements.settingsSheet.hidden = !state.settingsOpen;
+  elements.settingsScrim.hidden = !state.settingsOpen;
+
+  elements.keypad.querySelectorAll(".key").forEach((button) => {
+    button.disabled = !state.acceptingAnswer;
+  });
+}
+
+function prettyPhase(phase) {
+  switch (phase) {
+    case "ready":
+      return "Ready";
+    case "memorize":
+      return "Watch";
+    case "answering":
+      return "Answer";
+    case "feedback":
+      return "Check";
+    case "finished":
+      return "Done";
+    default:
+      return "Idle";
+  }
+}
+
+init();

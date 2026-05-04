@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>N-Back Math</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="hero-panel">
+        <div class="hero-row">
+          <div class="hero-copy">
+            <h1>N-Back Math</h1>
+            <p class="summary">
+              A new arithmetic problem appears every round. While viewing it, answer the one from
+              <span id="inline-n-label">1</span> step back.
+            </p>
+          </div>
+
+          <div class="top-actions">
+            <button class="primary" id="start-btn" type="button">Start</button>
+            <button class="secondary" id="reset-btn" type="button">Reset</button>
+            <button class="icon-button" id="settings-btn" type="button" aria-expanded="false" aria-controls="settings-sheet" aria-label="Open settings">
+              <span aria-hidden="true">⚙</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="console">
+        <div class="screen-wrap">
+          <div class="screen-chrome">
+            <span>Math Prompt</span>
+            <span id="phase-badge">Idle</span>
+          </div>
+          <div class="screen">
+            <div class="problem-display" id="problem-display">-</div>
+            <p class="screen-prompt" id="screen-prompt">Press start when you’re ready.</p>
+          </div>
+        </div>
+
+        <section class="answer-panel">
+          <div class="answer-header">
+            <h2>Your Answer</h2>
+            <p class="answer-instruction" id="answer-instruction">The keypad activates once the answer rounds begin.</p>
+          </div>
+
+          <div class="answer-value empty" id="answer-value">0</div>
+          <div class="keypad" id="keypad"></div>
+
+          <p class="footer-note">
+            Keyboard works too: digits to enter, <code>Backspace</code> to delete, <code>Enter</code> to submit.
+          </p>
+        </section>
+      </section>
+
+      <div class="settings-scrim" id="settings-scrim" hidden></div>
+      <section class="settings-sheet" id="settings-sheet" hidden>
+        <div class="settings-head">
+          <div>
+            <p class="sheet-label">Settings</p>
+            <h2>Game Setup</h2>
+          </div>
+          <button class="icon-button subtle" id="close-settings-btn" type="button" aria-label="Close settings">
+            <span aria-hidden="true">✕</span>
+          </button>
+        </div>
+
+        <div class="controls-grid">
+          <label>
+            <span>N Level</span>
+            <select id="n-level">
+              <option value="1" selected>1-back</option>
+              <option value="2">2-back</option>
+              <option value="3">3-back</option>
+              <option value="4">4-back</option>
+              <option value="5">5-back</option>
+              <option value="6">6-back</option>
+              <option value="7">7-back</option>
+              <option value="8">8-back</option>
+              <option value="9">9-back</option>
+              <option value="10">10-back</option>
+              <option value="11">11-back</option>
+              <option value="12">12-back</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Scored Rounds</span>
+            <select id="rounds">
+              <option value="10">10</option>
+              <option value="15" selected>15</option>
+              <option value="20">20</option>
+              <option value="30">30</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Round Time</span>
+            <select id="answer-ms">
+              <option value="2500">2.5s</option>
+              <option value="3500" selected>3.5s</option>
+              <option value="5000">5.0s</option>
+              <option value="7000">7.0s</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Operators</span>
+            <select id="operator-mode">
+              <option value="add" selected>Add Only</option>
+              <option value="mixed">Add + Subtract</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Max Digit</span>
+            <select id="digit-max">
+              <option value="5">0-5</option>
+              <option value="9" selected>0-9</option>
+            </select>
+          </label>
+        </div>
+
+        <section class="settings-results">
+          <div class="settings-results-head">
+            <p class="sheet-label">Run Summary</p>
+            <span class="results-phase" id="results-phase">Idle</span>
+          </div>
+
+          <dl class="stats-grid compact">
+            <div>
+              <dt>Round</dt>
+              <dd id="round-count">0 / 15</dd>
+            </div>
+            <div>
+              <dt>Answered</dt>
+              <dd id="question-count">0</dd>
+            </div>
+            <div>
+              <dt>Correct</dt>
+              <dd id="correct-count">0</dd>
+            </div>
+            <div>
+              <dt>Missed</dt>
+              <dd id="missed-count">0</dd>
+            </div>
+            <div>
+              <dt>Accuracy</dt>
+              <dd id="accuracy-count">0%</dd>
+            </div>
+            <div>
+              <dt>Streak</dt>
+              <dd id="streak-count">0</dd>
+            </div>
+          </dl>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
