@@ -28,7 +28,7 @@ const elements = {
   digitMax: document.getElementById("digit-max"),
 };
 
-const KEY_LAYOUT = ["1", "2", "3", "DEL", "4", "5", "6", "CLR", "7", "8", "9", "OK", "0"];
+const KEY_LAYOUT = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "CLR", "0"];
 
 const state = {
   gameActive: false,
@@ -37,7 +37,7 @@ const state = {
   phase: "idle",
   nBack: 1,
   totalRounds: 15,
-  answerMs: 3500,
+  answerMs: 3000,
   operatorMode: "add",
   digitMax: 9,
   displayStep: 0,
@@ -76,16 +76,14 @@ function createKey(token) {
   button.textContent = token;
   button.disabled = true;
 
-  if (token === "OK") {
-    button.classList.add("submit");
-    button.addEventListener("click", () => submitAnswer(false));
-  } else if (token === "CLR") {
+  if (token === "CLR") {
     button.classList.add("action");
+    button.classList.add("clear");
     button.addEventListener("click", clearAnswer);
-  } else if (token === "DEL") {
-    button.classList.add("action");
-    button.addEventListener("click", deleteDigit);
   } else {
+    if (token === "0") {
+      button.classList.add("zero");
+    }
     button.addEventListener("click", () => appendDigit(token));
   }
 
@@ -122,12 +120,8 @@ function bindEvents() {
     }
 
     if (event.key === "Backspace") {
-      deleteDigit();
+      clearAnswer();
       return;
-    }
-
-    if (event.key === "Enter") {
-      submitAnswer(false);
     }
   });
 }
@@ -282,18 +276,20 @@ function appendDigit(digit) {
   if (!state.acceptingAnswer) {
     return;
   }
-  if (state.currentAnswer.length >= 2) {
-    return;
-  }
-  state.currentAnswer += digit;
-  render();
-}
 
-function deleteDigit() {
-  if (!state.acceptingAnswer) {
+  if (state.currentAnswer === "0") {
+    state.currentAnswer = digit;
+  } else if (state.currentAnswer.length >= 2) {
+    return;
+  } else {
+    state.currentAnswer += digit;
+  }
+
+  if (Number(state.currentAnswer) === state.currentTarget.answer) {
+    submitAnswer(false);
     return;
   }
-  state.currentAnswer = state.currentAnswer.slice(0, -1);
+
   render();
 }
 

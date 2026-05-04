@@ -396,7 +396,7 @@ select {
 
 .keypad {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   min-height: 0;
 }
@@ -418,6 +418,14 @@ select {
 .key.submit {
   background: var(--accent);
   color: var(--accent-contrast);
+}
+
+.key.clear {
+  grid-column: 1;
+}
+
+.key.zero {
+  grid-column: 2;
 }
 
 .key:disabled {
