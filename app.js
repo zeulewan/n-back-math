@@ -315,6 +315,7 @@ function submitAnswer(fromTimeout) {
   const raw = state.currentAnswer.trim();
   const parsed = raw === "" ? null : Number(raw);
   const isCorrect = parsed === state.currentTarget.answer;
+  state.currentAnswer = "";
 
   if (isCorrect) {
     state.correct += 1;
@@ -399,8 +400,12 @@ function setProblem(value, flash = false) {
 }
 
 function setPrompt(text) {
-  elements.screenPrompt.textContent = text;
-  elements.answerInstruction.textContent = text;
+  if (elements.screenPrompt) {
+    elements.screenPrompt.textContent = text;
+  }
+  if (elements.answerInstruction) {
+    elements.answerInstruction.textContent = text;
+  }
 }
 
 function pulseKey(value, className) {
@@ -423,7 +428,9 @@ function render() {
     : 0;
 
   document.body.classList.toggle("playing", state.gameActive);
-  elements.inlineNLabel.textContent = String(state.nBack);
+  if (elements.inlineNLabel) {
+    elements.inlineNLabel.textContent = String(state.nBack);
+  }
   elements.phaseBadge.textContent = prettyPhase(state.phase);
   elements.roundCount.textContent = `${state.round} / ${state.totalRounds}`;
   elements.questionCount.textContent = String(state.answeredQuestions);
@@ -433,7 +440,7 @@ function render() {
   elements.streakCount.textContent = String(state.streak);
   elements.resultsPhase.textContent = prettyPhase(state.phase);
 
-  const visibleAnswer = state.currentAnswer === "" ? "0" : state.currentAnswer;
+  const visibleAnswer = state.currentAnswer === "" ? "\u00A0" : state.currentAnswer;
   elements.answerValue.textContent = visibleAnswer;
   elements.answerValue.classList.toggle("empty", state.currentAnswer === "");
 
