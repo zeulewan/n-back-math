@@ -1,10 +1,8 @@
 const elements = {
-  inlineNLabel: document.getElementById("inline-n-label"),
   resultBadge: document.getElementById("result-badge"),
   phaseBadge: document.getElementById("phase-badge"),
   problemDisplay: document.getElementById("problem-display"),
   timerFill: document.getElementById("timer-fill"),
-  screenPrompt: document.getElementById("screen-prompt"),
   answerValue: document.getElementById("answer-value"),
   clearButton: document.getElementById("clear-btn"),
   roundCount: document.getElementById("round-count"),
@@ -14,7 +12,6 @@ const elements = {
   accuracyCount: document.getElementById("accuracy-count"),
   streakCount: document.getElementById("streak-count"),
   resultsPhase: document.getElementById("results-phase"),
-  answerInstruction: document.getElementById("answer-instruction"),
   keypad: document.getElementById("keypad"),
   startButton: document.getElementById("start-btn"),
   resetButton: document.getElementById("reset-btn"),
@@ -25,8 +22,6 @@ const elements = {
   nLevel: document.getElementById("n-level"),
   rounds: document.getElementById("rounds"),
   answerMs: document.getElementById("answer-ms"),
-  operatorMode: document.getElementById("operator-mode"),
-  digitMax: document.getElementById("digit-max"),
 };
 
 const KEY_LAYOUT = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
@@ -39,8 +34,6 @@ const state = {
   nBack: 1,
   totalRounds: 15,
   answerMs: 3000,
-  operatorMode: "add",
-  digitMax: 9,
   displayStep: 0,
   round: 0,
   problems: [],
@@ -93,7 +86,7 @@ function bindEvents() {
   elements.closeSettingsButton.addEventListener("click", closeSettings);
   elements.settingsScrim.addEventListener("click", closeSettings);
 
-  [elements.nLevel, elements.rounds, elements.answerMs, elements.operatorMode, elements.digitMax].forEach((control) => {
+  [elements.nLevel, elements.rounds, elements.answerMs].forEach((control) => {
     control.addEventListener("change", () => {
       syncSettingsFromControls();
       render();
@@ -136,8 +129,6 @@ function syncSettingsFromControls() {
   state.nBack = Number(elements.nLevel.value);
   state.totalRounds = Number(elements.rounds.value);
   state.answerMs = Number(elements.answerMs.value);
-  state.operatorMode = elements.operatorMode.value === "mixed" ? "mixed" : "add";
-  state.digitMax = Number(elements.digitMax.value);
 }
 
 function startGame() {
@@ -162,7 +153,6 @@ function startGame() {
   state.lastOutcome = null;
 
   setProblem("Ready");
-  setPrompt(`Answering starts after ${state.nBack} prompt${state.nBack === 1 ? "" : "s"}.`);
   render();
 
   queue(nextRound, 700);
@@ -188,14 +178,10 @@ function resetGame() {
   state.lastOutcome = null;
 
   setProblem("-");
-  setPrompt("Press start when you’re ready.");
-  clearKeyFeedback();
   render();
 }
 
 function nextRound() {
-  clearKeyFeedback();
-
   if (state.answeredQuestions >= state.totalRounds) {
     finishGame();
     return;
@@ -214,14 +200,6 @@ function nextRound() {
   if (state.displayStep <= state.nBack) {
     state.phase = "memorize";
     state.acceptingAnswer = false;
-
-    const promptsUntilAnswer = state.nBack - state.displayStep;
-    if (promptsUntilAnswer > 0) {
-      setPrompt(`Watch this. Answering starts in ${promptsUntilAnswer} more prompt${promptsUntilAnswer === 1 ? "" : "s"}.`);
-    } else {
-      setPrompt("Watch this. The next prompt is the first answer round.");
-    }
-
     render();
     queue(nextRound, state.answerMs);
     return;
@@ -231,17 +209,15 @@ function nextRound() {
   state.acceptingAnswer = true;
   state.currentTarget = state.problems[state.displayStep - state.nBack - 1];
   state.round = state.answeredQuestions + 1;
-
-  setPrompt(`While viewing ${visibleProblem}, answer the ${state.nBack}-back problem.`);
   render();
-  queue(() => submitAnswer(true), state.answerMs);
+  queue(submitAnswer, state.answerMs);
 }
 
 function buildProblem() {
-  const left = randomInt(state.digitMax);
-  const right = randomInt(state.digitMax);
+  const left = randomInt(9);
+  const right = randomInt(9);
 
-  if (state.operatorMode === "mixed" && Math.random() < 0.5) {
+  if (Math.random() < 0.5) {
     const high = Math.max(left, right);
     const low = Math.min(left, right);
     return {
@@ -282,7 +258,7 @@ function appendDigit(digit) {
   }
 
   if (Number(state.currentAnswer) === state.currentTarget.answer) {
-    submitAnswer(false);
+    submitAnswer();
     return;
   }
 
@@ -297,7 +273,7 @@ function clearAnswer() {
   render();
 }
 
-function submitAnswer(fromTimeout) {
+function submitAnswer() {
   if (!state.acceptingAnswer || !state.currentTarget) {
     return;
   }
@@ -332,12 +308,6 @@ function finishGame() {
   state.phase = "finished";
   stopTimerBar();
   setProblem("✓");
-
-  const accuracy = state.answeredQuestions
-    ? Math.round((state.correct / state.answeredQuestions) * 100)
-    : 0;
-
-  setPrompt(`Run complete. ${state.correct} right out of ${state.answeredQuestions}, ${accuracy}% accuracy.`);
   render();
 }
 
@@ -372,7 +342,9 @@ function stopTimerBar() {
     state.timerAnimation = null;
   }
   elements.timerFill.style.transition = "none";
-  elements.timerFill.style.transform = state.gameActive ? "scaleX(0)" : "scaleX(1)";
+  elements.timerFill.style.transform = state.gameActive
+    ? "scaleX(0)"
+    : "scaleX(1)";
 }
 
 function setProblem(value, flash = false) {
@@ -385,41 +357,23 @@ function setProblem(value, flash = false) {
   }
 }
 
-function setPrompt(text) {
-  if (elements.screenPrompt) {
-    elements.screenPrompt.textContent = text;
-  }
-  if (elements.answerInstruction) {
-    elements.answerInstruction.textContent = text;
-  }
-}
-
-function pulseKey(value, className) {
-  const key = elements.keypad.querySelector(`[data-value="${value}"]`);
-  if (!key) {
-    return;
-  }
-  key.classList.add(className);
-}
-
-function clearKeyFeedback() {
-  elements.keypad.querySelectorAll(".key").forEach((button) => {
-    button.classList.remove("correct", "wrong");
-  });
-}
-
 function render() {
   const accuracy = state.answeredQuestions
     ? Math.round((state.correct / state.answeredQuestions) * 100)
     : 0;
 
   document.body.classList.toggle("playing", state.gameActive);
-  if (elements.inlineNLabel) {
-    elements.inlineNLabel.textContent = String(state.nBack);
-  }
   elements.phaseBadge.textContent = prettyPhase(state.phase);
-  elements.resultBadge.textContent = state.lastOutcome === "correct" ? "✓" : state.lastOutcome === "wrong" ? "✕" : "";
-  elements.resultBadge.classList.toggle("correct", state.lastOutcome === "correct");
+  elements.resultBadge.textContent =
+    state.lastOutcome === "correct"
+      ? "✓"
+      : state.lastOutcome === "wrong"
+        ? "✕"
+        : "";
+  elements.resultBadge.classList.toggle(
+    "correct",
+    state.lastOutcome === "correct",
+  );
   elements.resultBadge.classList.toggle("wrong", state.lastOutcome === "wrong");
   elements.roundCount.textContent = `${state.round} / ${state.totalRounds}`;
   elements.questionCount.textContent = String(state.answeredQuestions);
@@ -429,23 +383,28 @@ function render() {
   elements.streakCount.textContent = String(state.streak);
   elements.resultsPhase.textContent = prettyPhase(state.phase);
 
-  const visibleAnswer = state.currentAnswer === "" ? "\u00A0" : state.currentAnswer;
+  const visibleAnswer =
+    state.currentAnswer === "" ? "\u00A0" : state.currentAnswer;
   elements.answerValue.textContent = visibleAnswer;
   elements.answerValue.classList.toggle("empty", state.currentAnswer === "");
 
-  [elements.nLevel, elements.rounds, elements.answerMs, elements.operatorMode, elements.digitMax].forEach((control) => {
+  [elements.nLevel, elements.rounds, elements.answerMs].forEach((control) => {
     control.disabled = state.gameActive;
   });
 
   elements.startButton.disabled = state.gameActive;
-  elements.settingsButton.setAttribute("aria-expanded", String(state.settingsOpen));
+  elements.settingsButton.setAttribute(
+    "aria-expanded",
+    String(state.settingsOpen),
+  );
   elements.settingsSheet.hidden = !state.settingsOpen;
   elements.settingsScrim.hidden = !state.settingsOpen;
 
   elements.keypad.querySelectorAll(".key").forEach((button) => {
     button.disabled = !state.acceptingAnswer;
   });
-  elements.clearButton.disabled = !state.acceptingAnswer || state.currentAnswer === "";
+  elements.clearButton.disabled =
+    !state.acceptingAnswer || state.currentAnswer === "";
 }
 
 function prettyPhase(phase) {
@@ -456,8 +415,6 @@ function prettyPhase(phase) {
       return "Watch";
     case "answering":
       return "Answer";
-    case "feedback":
-      return "Check";
     case "finished":
       return "Done";
     default:
