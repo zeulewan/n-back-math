@@ -1,5 +1,6 @@
 const elements = {
   inlineNLabel: document.getElementById("inline-n-label"),
+  resultBadge: document.getElementById("result-badge"),
   phaseBadge: document.getElementById("phase-badge"),
   problemDisplay: document.getElementById("problem-display"),
   timerFill: document.getElementById("timer-fill"),
@@ -49,6 +50,7 @@ const state = {
   correct: 0,
   missed: 0,
   streak: 0,
+  lastOutcome: null,
   timers: [],
   timerAnimation: null,
 };
@@ -167,6 +169,7 @@ function startGame() {
   state.correct = 0;
   state.missed = 0;
   state.streak = 0;
+  state.lastOutcome = null;
 
   setProblem("Ready");
   setPrompt(`Answering starts after ${state.nBack} prompt${state.nBack === 1 ? "" : "s"}.`);
@@ -192,6 +195,7 @@ function resetGame() {
   state.correct = 0;
   state.missed = 0;
   state.streak = 0;
+  state.lastOutcome = null;
 
   setProblem("-");
   setPrompt("Press start when you’re ready.");
@@ -320,24 +324,14 @@ function submitAnswer(fromTimeout) {
   if (isCorrect) {
     state.correct += 1;
     state.streak += 1;
-    setPrompt("Correct.");
-    setProblem("✓");
-    pulseKey("OK", "correct");
+    state.lastOutcome = "correct";
   } else {
     state.missed += 1;
     state.streak = 0;
-    if (fromTimeout || parsed === null) {
-      setPrompt("Time's up.");
-    } else {
-      setPrompt("Incorrect.");
-      pulseKey("OK", "wrong");
-    }
-    setProblem("✕");
+    state.lastOutcome = "wrong";
   }
 
-  state.phase = "feedback";
-  render();
-  queue(nextRound, 900);
+  nextRound();
 }
 
 function finishGame() {
@@ -432,6 +426,9 @@ function render() {
     elements.inlineNLabel.textContent = String(state.nBack);
   }
   elements.phaseBadge.textContent = prettyPhase(state.phase);
+  elements.resultBadge.textContent = state.lastOutcome === "correct" ? "✓" : state.lastOutcome === "wrong" ? "✕" : "";
+  elements.resultBadge.classList.toggle("correct", state.lastOutcome === "correct");
+  elements.resultBadge.classList.toggle("wrong", state.lastOutcome === "wrong");
   elements.roundCount.textContent = `${state.round} / ${state.totalRounds}`;
   elements.questionCount.textContent = String(state.answeredQuestions);
   elements.correctCount.textContent = String(state.correct);
