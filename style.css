@@ -123,10 +123,14 @@ body {
   grid-template-rows: auto 1fr;
   gap: 8px;
   height: calc(100dvh - 20px - 70px);
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  overflow: hidden;
 }
 
-.screen-wrap,
-.answer-panel,
 .settings-sheet {
   border: 1px solid var(--line);
   border-radius: 18px;
@@ -136,11 +140,13 @@ body {
 
 .screen-wrap,
 .answer-panel {
-  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
 }
 
 .screen-wrap {
-  padding: 10px;
+  padding: 0;
 }
 
 .screen-chrome {
@@ -237,40 +243,29 @@ body {
 
 .answer-panel {
   display: grid;
-  grid-template-rows: auto auto 1fr auto;
-  padding: 10px;
+  grid-template-rows: auto 1fr;
+  padding: 10px 0 0;
   min-height: 0;
+  border-top: 1px solid var(--line);
 }
 
-.answer-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: start;
+.answer-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 8px;
   margin-bottom: 8px;
 }
 
-.answer-header h2,
 .settings-head h2 {
   margin: 0;
   font-size: 1rem;
-}
-
-.answer-instruction {
-  margin: 0;
-  max-width: 34ch;
-  font-size: 0.8rem;
-  line-height: 1.25;
-  color: var(--muted);
-  text-align: right;
 }
 
 .answer-value {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  min-height: 48px;
-  margin-bottom: 8px;
+  min-height: 52px;
   padding: 0 14px;
   border-radius: 14px;
   background: var(--panel-soft);
@@ -281,6 +276,12 @@ body {
 
 .answer-value.empty {
   color: #95a3b2;
+}
+
+.answer-clear {
+  min-width: 72px;
+  min-height: 52px;
+  padding: 0 14px;
 }
 
 .stats-grid {
@@ -408,20 +409,6 @@ select {
   background: var(--key-bg);
   color: var(--text);
   cursor: pointer;
-}
-
-.key.action {
-  background: var(--panel-strong);
-  font-size: 0.95rem;
-}
-
-.key.submit {
-  background: var(--accent);
-  color: var(--accent-contrast);
-}
-
-.key.clear {
-  grid-column: 1;
 }
 
 .key.zero {
@@ -560,15 +547,6 @@ code {
 
   .screen {
     min-height: 150px;
-  }
-
-  .answer-header {
-    flex-direction: column;
-  }
-
-  .answer-instruction {
-    max-width: none;
-    text-align: left;
   }
 
   .stats-grid {

@@ -6,6 +6,7 @@ const elements = {
   timerFill: document.getElementById("timer-fill"),
   screenPrompt: document.getElementById("screen-prompt"),
   answerValue: document.getElementById("answer-value"),
+  clearButton: document.getElementById("clear-btn"),
   roundCount: document.getElementById("round-count"),
   questionCount: document.getElementById("question-count"),
   correctCount: document.getElementById("correct-count"),
@@ -28,7 +29,7 @@ const elements = {
   digitMax: document.getElementById("digit-max"),
 };
 
-const KEY_LAYOUT = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "CLR", "0"];
+const KEY_LAYOUT = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 
 const state = {
   gameActive: false,
@@ -76,16 +77,10 @@ function createKey(token) {
   button.textContent = token;
   button.disabled = true;
 
-  if (token === "CLR") {
-    button.classList.add("action");
-    button.classList.add("clear");
-    button.addEventListener("click", clearAnswer);
-  } else {
-    if (token === "0") {
-      button.classList.add("zero");
-    }
-    button.addEventListener("click", () => appendDigit(token));
+  if (token === "0") {
+    button.classList.add("zero");
   }
+  button.addEventListener("click", () => appendDigit(token));
 
   return button;
 }
@@ -93,6 +88,7 @@ function createKey(token) {
 function bindEvents() {
   elements.startButton.addEventListener("click", startGame);
   elements.resetButton.addEventListener("click", resetGame);
+  elements.clearButton.addEventListener("click", clearAnswer);
   elements.settingsButton.addEventListener("click", toggleSettings);
   elements.closeSettingsButton.addEventListener("click", closeSettings);
   elements.settingsScrim.addEventListener("click", closeSettings);
@@ -449,6 +445,7 @@ function render() {
   elements.keypad.querySelectorAll(".key").forEach((button) => {
     button.disabled = !state.acceptingAnswer;
   });
+  elements.clearButton.disabled = !state.acceptingAnswer || state.currentAnswer === "";
 }
 
 function prettyPhase(phase) {
