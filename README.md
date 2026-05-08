@@ -8,6 +8,7 @@ This repo is a static frontend only. There is no backend service in the project.
 - A new arithmetic problem appears every round.
 - While viewing the current problem, answer the one from `N` steps back.
 - `N` can be set from `1` to `12`.
+- Runs default to `24` scored questions.
 - Prompts always use single-digit `0-9` addition and subtraction.
 - Subtraction never goes negative.
 
@@ -25,5 +26,5 @@ Open `index.html` directly or serve the folder with any static file server.
 ## Settings
 
 - `N Level`: `1-back` through `12-back`
-- `Scored Rounds`: `10`, `15`, `20`, or `30`
-- `Speed`: `Slow` (`3s`) or `Fast` (`1s`)
+- `Scored Rounds`: `10`, `15`, `20`, `24`, or `30`
+- `Speed`: `Slow` (`4s`) or `Fast` (`3s`)
