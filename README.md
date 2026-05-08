@@ -4,15 +4,7 @@ Mobile-first arithmetic `n-back` trainer. Static frontend only.
 
 ![N-Back Math screenshot](assets/screenshot.png)
 
-## Use
-
-Open `index.html` directly, or serve the folder:
-
-```sh
-python3 -m http.server 8003
-```
-
-Then open `http://localhost:8003`.
+Play it on GitHub Pages: https://zeulewan.github.io/n-back-math/
 
 ## Play
 
