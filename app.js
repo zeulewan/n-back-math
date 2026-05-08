@@ -1,51 +1,63 @@
 const elements = {
-  resultBadge: document.getElementById("result-badge"),
-  phaseBadge: document.getElementById("phase-badge"),
-  problemDisplay: document.getElementById("problem-display"),
-  currentLevelLabel: document.getElementById("current-level-label"),
-  timerFill: document.getElementById("timer-fill"),
-  answerValue: document.getElementById("answer-value"),
-  clearButton: document.getElementById("clear-btn"),
-  roundCount: document.getElementById("round-count"),
-  questionCount: document.getElementById("question-count"),
-  correctCount: document.getElementById("correct-count"),
-  missedCount: document.getElementById("missed-count"),
-  accuracyCount: document.getElementById("accuracy-count"),
-  streakCount: document.getElementById("streak-count"),
-  resultsPhase: document.getElementById("results-phase"),
-  keypad: document.getElementById("keypad"),
-  startButton: document.getElementById("start-btn"),
-  resetButton: document.getElementById("reset-btn"),
-  settingsButton: document.getElementById("settings-btn"),
-  closeSettingsButton: document.getElementById("close-settings-btn"),
-  settingsSheet: document.getElementById("settings-sheet"),
-  settingsScrim: document.getElementById("settings-scrim"),
+  body: document.body,
+  gameTab: document.getElementById("game-tab"),
+  statsTab: document.getElementById("stats-tab"),
+  gameView: document.getElementById("game-view"),
+  statsView: document.getElementById("stats-view"),
   levelDownButton: document.getElementById("level-down-btn"),
   levelUpButton: document.getElementById("level-up-btn"),
   levelValue: document.getElementById("level-value"),
+  startButton: document.getElementById("start-btn"),
+  clearButton: document.getElementById("clear-btn"),
+  clearProgressButton: document.getElementById("clear-progress-btn"),
+  phaseBadge: document.getElementById("phase-badge"),
+  resultBadge: document.getElementById("result-badge"),
+  timerFill: document.getElementById("timer-fill"),
+  problemDisplay: document.getElementById("problem-display"),
+  answerValue: document.getElementById("answer-value"),
+  keypad: document.getElementById("keypad"),
+  roundCount: document.getElementById("round-count"),
+  finishSummary: document.getElementById("finish-summary"),
+  correctCount: document.getElementById("correct-count"),
+  missedCount: document.getElementById("missed-count"),
+  accuracyCount: document.getElementById("accuracy-count"),
+  lifetimeRuns: document.getElementById("lifetime-runs"),
+  lifetimeAccuracy: document.getElementById("lifetime-accuracy"),
+  bestAccuracy: document.getElementById("best-accuracy"),
+  bestStreak: document.getElementById("best-streak"),
+  storedLevelLabel: document.getElementById("stored-level-label"),
+  recentCount: document.getElementById("recent-count"),
+  levelMap: document.getElementById("level-map"),
+  historyList: document.getElementById("history-list"),
 };
 
 const KEY_LAYOUT = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
 const MAX_N_BACK = 12;
+const TOTAL_ROUNDS = 24;
+const STORAGE_KEY = "nBackMath.progress.v2";
+const MAX_SAVED_RUNS = 80;
+
 const LEVELS = Array.from({ length: MAX_N_BACK * 2 }, (_, index) => {
   const nBack = Math.floor(index / 2) + 1;
   const isFast = index % 2 === 1;
+  const speedLabel = isFast ? "Fast" : "Slow";
 
   return {
+    index,
+    id: `${speedLabel.toLowerCase()}-${nBack}`,
     nBack,
-    speedLabel: isFast ? "Fast" : "Slow",
+    speedLabel,
     answerMs: isFast ? 3000 : 4000,
   };
 });
 
 const state = {
+  activeView: "game",
   gameActive: false,
   acceptingAnswer: false,
-  settingsOpen: false,
   phase: "idle",
   levelIndex: 0,
   nBack: 1,
-  totalRounds: 24,
   answerMs: 4000,
   displayStep: 0,
   round: 0,
@@ -57,16 +69,65 @@ const state = {
   correct: 0,
   missed: 0,
   streak: 0,
+  maxStreak: 0,
   lastOutcome: null,
+  runStartedAt: null,
   timers: [],
   timerAnimation: null,
+  progress: createDefaultProgress(),
 };
 
 function init() {
+  state.progress = loadProgress();
+  state.levelIndex = clampLevelIndex(state.progress.levelIndex);
   buildKeypad();
   bindEvents();
   applyLevelSettings();
   render();
+}
+
+function createDefaultProgress() {
+  return {
+    version: 2,
+    levelIndex: 0,
+    runs: [],
+  };
+}
+
+function loadProgress() {
+  try {
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      return createDefaultProgress();
+    }
+
+    const parsed = JSON.parse(raw);
+    const progress = createDefaultProgress();
+    progress.levelIndex = clampLevelIndex(Number(parsed.levelIndex) || 0);
+    progress.runs = Array.isArray(parsed.runs)
+      ? parsed.runs.filter(isValidRun).slice(0, MAX_SAVED_RUNS)
+      : [];
+    return progress;
+  } catch {
+    return createDefaultProgress();
+  }
+}
+
+function isValidRun(run) {
+  return (
+    run &&
+    typeof run === "object" &&
+    Number.isFinite(run.levelIndex) &&
+    run.levelIndex >= 0 &&
+    run.levelIndex < LEVELS.length &&
+    Number.isFinite(run.correct) &&
+    Number.isFinite(run.missed)
+  );
+}
+
+function saveProgress() {
+  state.progress.levelIndex = state.levelIndex;
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.progress));
 }
 
 function buildKeypad() {
@@ -86,28 +147,32 @@ function createKey(token) {
   if (token === "0") {
     button.classList.add("zero");
   }
-  button.addEventListener("click", () => appendDigit(token));
 
+  button.addEventListener("click", () => appendDigit(token));
   return button;
 }
 
 function bindEvents() {
-  elements.startButton.addEventListener("click", startGame);
-  elements.resetButton.addEventListener("click", resetGame);
-  elements.clearButton.addEventListener("click", clearAnswer);
-  elements.settingsButton.addEventListener("click", toggleSettings);
-  elements.closeSettingsButton.addEventListener("click", closeSettings);
-  elements.settingsScrim.addEventListener("click", closeSettings);
+  elements.gameTab.addEventListener("click", () => setView("game"));
+  elements.statsTab.addEventListener("click", () => setView("stats"));
   elements.levelDownButton.addEventListener("click", () => adjustLevel(-1));
   elements.levelUpButton.addEventListener("click", () => adjustLevel(1));
+  elements.startButton.addEventListener("click", handlePrimaryAction);
+  elements.clearButton.addEventListener("click", clearAnswer);
+  elements.clearProgressButton.addEventListener("click", clearProgress);
 
   window.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && state.settingsOpen) {
-      closeSettings();
+    if (event.key === "ArrowLeft" && !state.gameActive) {
+      adjustLevel(-1);
       return;
     }
 
-    if (!state.acceptingAnswer) {
+    if (event.key === "ArrowRight" && !state.gameActive) {
+      adjustLevel(1);
+      return;
+    }
+
+    if (!state.acceptingAnswer || state.activeView !== "game") {
       return;
     }
 
@@ -118,18 +183,25 @@ function bindEvents() {
 
     if (event.key === "Backspace") {
       clearAnswer();
-      return;
     }
   });
 }
 
-function toggleSettings() {
-  state.settingsOpen = !state.settingsOpen;
-  render();
+function handlePrimaryAction() {
+  if (isResetState()) {
+    resetGame();
+    return;
+  }
+
+  startGame();
 }
 
-function closeSettings() {
-  state.settingsOpen = false;
+function setView(viewName) {
+  if (viewName === "stats" && state.gameActive) {
+    return;
+  }
+
+  state.activeView = viewName;
   render();
 }
 
@@ -138,18 +210,20 @@ function adjustLevel(delta) {
     return;
   }
 
-  const nextIndex = Math.min(
-    Math.max(state.levelIndex + delta, 0),
-    LEVELS.length - 1,
-  );
-
+  const nextIndex = clampLevelIndex(state.levelIndex + delta);
   if (nextIndex === state.levelIndex) {
     return;
   }
 
   state.levelIndex = nextIndex;
   applyLevelSettings();
+  saveProgress();
+  pulseElement(elements.levelValue);
   render();
+}
+
+function clampLevelIndex(index) {
+  return Math.min(Math.max(index, 0), LEVELS.length - 1);
 }
 
 function applyLevelSettings() {
@@ -161,9 +235,9 @@ function applyLevelSettings() {
 function startGame() {
   clearAllTimers();
   stopTimerBar();
-  state.settingsOpen = false;
   applyLevelSettings();
-
+  saveProgress();
+  state.activeView = "game";
   state.gameActive = true;
   state.acceptingAnswer = false;
   state.phase = "ready";
@@ -177,11 +251,12 @@ function startGame() {
   state.correct = 0;
   state.missed = 0;
   state.streak = 0;
+  state.maxStreak = 0;
   state.lastOutcome = null;
+  state.runStartedAt = Date.now();
 
   setProblem("Ready");
   render();
-
   queue(nextRound, 700);
 }
 
@@ -190,7 +265,6 @@ function resetGame() {
   state.gameActive = false;
   stopTimerBar();
   state.acceptingAnswer = false;
-  state.settingsOpen = false;
   state.phase = "idle";
   state.displayStep = 0;
   state.round = 0;
@@ -202,14 +276,16 @@ function resetGame() {
   state.correct = 0;
   state.missed = 0;
   state.streak = 0;
+  state.maxStreak = 0;
   state.lastOutcome = null;
+  state.runStartedAt = null;
 
-  setProblem("-");
+  setProblem("N-Back Math");
   render();
 }
 
 function nextRound() {
-  if (state.answeredQuestions >= state.totalRounds) {
+  if (state.answeredQuestions >= TOTAL_ROUNDS) {
     finishGame();
     return;
   }
@@ -220,8 +296,7 @@ function nextRound() {
   state.problems.push(state.currentProblem);
   state.currentTarget = null;
 
-  const visibleProblem = formatProblem(state.currentProblem);
-  setProblem(visibleProblem, true);
+  setProblem(formatProblem(state.currentProblem), true);
   startTimerBar(state.answerMs);
 
   if (state.displayStep <= state.nBack) {
@@ -296,6 +371,7 @@ function clearAnswer() {
   if (!state.acceptingAnswer) {
     return;
   }
+
   state.currentAnswer = "";
   render();
 }
@@ -319,6 +395,7 @@ function submitAnswer() {
   if (isCorrect) {
     state.correct += 1;
     state.streak += 1;
+    state.maxStreak = Math.max(state.maxStreak, state.streak);
     state.lastOutcome = "correct";
   } else {
     state.missed += 1;
@@ -334,7 +411,53 @@ function finishGame() {
   state.acceptingAnswer = false;
   state.phase = "finished";
   stopTimerBar();
-  setProblem("✓");
+  setProblem("Done");
+  recordRun();
+  render();
+}
+
+function recordRun() {
+  const level = LEVELS[state.levelIndex];
+  const run = {
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    completedAt: new Date().toISOString(),
+    levelIndex: state.levelIndex,
+    levelId: level.id,
+    levelLabel: formatLevel(level),
+    nBack: level.nBack,
+    speedLabel: level.speedLabel,
+    answerMs: level.answerMs,
+    rounds: TOTAL_ROUNDS,
+    correct: state.correct,
+    missed: state.missed,
+    accuracy: calculateAccuracy(state.correct, TOTAL_ROUNDS),
+    bestStreak: state.maxStreak,
+    durationMs: state.runStartedAt ? Date.now() - state.runStartedAt : 0,
+  };
+
+  state.progress.runs.unshift(run);
+  state.progress.runs = state.progress.runs.slice(0, MAX_SAVED_RUNS);
+  saveProgress();
+}
+
+function clearProgress() {
+  if (state.gameActive) {
+    return;
+  }
+
+  const shouldClear = window.confirm(
+    "Clear saved level, run history, and stats from this browser?",
+  );
+  if (!shouldClear) {
+    return;
+  }
+
+  state.progress = createDefaultProgress();
+  state.levelIndex = 0;
+  applyLevelSettings();
+  saveProgress();
+  resetGame();
+  state.activeView = "stats";
   render();
 }
 
@@ -368,6 +491,7 @@ function stopTimerBar() {
     window.cancelAnimationFrame(state.timerAnimation);
     state.timerAnimation = null;
   }
+
   elements.timerFill.style.transition = "none";
   elements.timerFill.style.transform = state.gameActive
     ? "scaleX(0)"
@@ -385,60 +509,237 @@ function setProblem(value, flash = false) {
 }
 
 function render() {
-  const accuracy = state.answeredQuestions
-    ? Math.round((state.correct / state.answeredQuestions) * 100)
-    : 0;
+  const level = LEVELS[state.levelIndex];
+  const currentAccuracy = calculateAccuracy(
+    state.correct,
+    Math.max(state.answeredQuestions, 1),
+  );
+  const progressStats = buildProgressStats();
 
-  document.body.classList.toggle("playing", state.gameActive);
-  elements.phaseBadge.textContent = prettyPhase(state.phase);
-  elements.resultBadge.textContent =
+  elements.body.classList.toggle("playing", state.gameActive);
+  elements.gameTab.classList.toggle("active", state.activeView === "game");
+  elements.statsTab.classList.toggle("active", state.activeView === "stats");
+  elements.gameTab.setAttribute(
+    "aria-selected",
+    String(state.activeView === "game"),
+  );
+  elements.statsTab.setAttribute(
+    "aria-selected",
+    String(state.activeView === "stats"),
+  );
+  elements.statsTab.disabled = state.gameActive;
+  elements.gameView.classList.toggle("active", state.activeView === "game");
+  elements.statsView.classList.toggle("active", state.activeView === "stats");
+
+  setAnimatedText(elements.levelValue, formatLevel(level));
+  setAnimatedText(elements.storedLevelLabel, formatLevel(level));
+  elements.levelDownButton.disabled = state.gameActive || state.levelIndex === 0;
+  elements.levelUpButton.disabled =
+    state.gameActive || state.levelIndex === LEVELS.length - 1;
+  setAnimatedText(elements.startButton, isResetState() ? "Reset" : "Start");
+  elements.startButton.classList.toggle("is-reset", isResetState());
+  elements.clearProgressButton.disabled = state.gameActive;
+
+  setAnimatedText(elements.phaseBadge, prettyPhase(state.phase));
+  setAnimatedText(
+    elements.resultBadge,
     state.lastOutcome === "correct"
-      ? "✓"
+      ? "OK"
       : state.lastOutcome === "wrong"
-        ? "✕"
-        : "";
+        ? "MISS"
+        : "",
+  );
   elements.resultBadge.classList.toggle(
     "correct",
     state.lastOutcome === "correct",
   );
   elements.resultBadge.classList.toggle("wrong", state.lastOutcome === "wrong");
-  elements.roundCount.textContent = `${state.round} / ${state.totalRounds}`;
-  elements.questionCount.textContent = String(state.answeredQuestions);
-  elements.correctCount.textContent = String(state.correct);
-  elements.missedCount.textContent = String(state.missed);
-  elements.accuracyCount.textContent = `${accuracy}%`;
-  elements.streakCount.textContent = String(state.streak);
-  elements.resultsPhase.textContent = prettyPhase(state.phase);
+
+  setAnimatedText(elements.roundCount, `${state.round} / ${TOTAL_ROUNDS}`);
+  setAnimatedText(elements.correctCount, String(state.correct));
+  setAnimatedText(elements.missedCount, String(state.missed));
+  setAnimatedText(elements.accuracyCount, `${currentAccuracy}%`);
+  elements.finishSummary.hidden = state.phase !== "finished";
 
   const visibleAnswer =
     state.currentAnswer === "" ? "\u00A0" : state.currentAnswer;
-  elements.answerValue.textContent = visibleAnswer;
+  setAnimatedText(elements.answerValue, visibleAnswer);
   elements.answerValue.classList.toggle("empty", state.currentAnswer === "");
-
-  const level = LEVELS[state.levelIndex];
-  elements.currentLevelLabel.textContent = formatLevel(level);
-  elements.levelValue.textContent = formatLevel(level);
-  elements.levelDownButton.disabled = state.gameActive || state.levelIndex === 0;
-  elements.levelUpButton.disabled =
-    state.gameActive || state.levelIndex === LEVELS.length - 1;
-
-  elements.startButton.disabled = state.gameActive;
-  elements.settingsButton.setAttribute(
-    "aria-expanded",
-    String(state.settingsOpen),
-  );
-  elements.settingsSheet.hidden = !state.settingsOpen;
-  elements.settingsScrim.hidden = !state.settingsOpen;
-
+  elements.clearButton.disabled =
+    !state.acceptingAnswer || state.currentAnswer === "";
   elements.keypad.querySelectorAll(".key").forEach((button) => {
     button.disabled = !state.acceptingAnswer;
   });
-  elements.clearButton.disabled =
-    !state.acceptingAnswer || state.currentAnswer === "";
+
+  setAnimatedText(elements.lifetimeRuns, String(progressStats.totalRuns));
+  setAnimatedText(
+    elements.lifetimeAccuracy,
+    `${progressStats.lifetimeAccuracy}%`,
+  );
+  setAnimatedText(elements.bestAccuracy, `${progressStats.bestAccuracy}%`);
+  setAnimatedText(elements.bestStreak, String(progressStats.bestStreak));
+  setAnimatedText(elements.recentCount, `${state.progress.runs.length} saved`);
+  renderLevelMap(progressStats);
+  renderHistory();
+}
+
+function isResetState() {
+  return state.gameActive || state.phase === "finished";
+}
+
+function setAnimatedText(element, value) {
+  if (element.textContent === value) {
+    return;
+  }
+
+  element.textContent = value;
+  pulseElement(element);
+}
+
+function pulseElement(element) {
+  element.classList.remove("text-pop");
+  void element.offsetWidth;
+  element.classList.add("text-pop");
+}
+
+function buildProgressStats() {
+  const runs = state.progress.runs;
+  const totals = runs.reduce(
+    (acc, run) => {
+      acc.correct += run.correct;
+      acc.rounds += run.rounds || run.correct + run.missed;
+      acc.bestAccuracy = Math.max(acc.bestAccuracy, run.accuracy || 0);
+      acc.bestStreak = Math.max(acc.bestStreak, run.bestStreak || 0);
+      return acc;
+    },
+    {
+      correct: 0,
+      rounds: 0,
+      bestAccuracy: 0,
+      bestStreak: 0,
+    },
+  );
+
+  return {
+    totalRuns: runs.length,
+    lifetimeAccuracy: calculateAccuracy(totals.correct, totals.rounds),
+    bestAccuracy: totals.bestAccuracy,
+    bestStreak: totals.bestStreak,
+    levelRecords: buildLevelRecords(runs),
+  };
+}
+
+function buildLevelRecords(runs) {
+  return LEVELS.map((level) => {
+    const levelRuns = runs.filter((run) => run.levelIndex === level.index);
+    const bestRun = levelRuns.reduce(
+      (best, run) => (!best || run.accuracy > best.accuracy ? run : best),
+      null,
+    );
+
+    return {
+      level,
+      runs: levelRuns.length,
+      bestAccuracy: bestRun ? bestRun.accuracy : 0,
+      bestStreak: levelRuns.reduce(
+        (best, run) => Math.max(best, run.bestStreak || 0),
+        0,
+      ),
+    };
+  });
+}
+
+function renderLevelMap(progressStats) {
+  elements.levelMap.replaceChildren(
+    ...progressStats.levelRecords.map((record) => {
+      const item = document.createElement("button");
+      item.type = "button";
+      item.className = "level-cell";
+      item.classList.toggle("current", record.level.index === state.levelIndex);
+      item.classList.toggle("complete", record.bestAccuracy >= 80);
+      item.disabled = state.gameActive;
+      item.addEventListener("click", () => {
+        state.levelIndex = record.level.index;
+        applyLevelSettings();
+        saveProgress();
+        setView("game");
+      });
+
+      const name = document.createElement("span");
+      name.className = "level-cell-name";
+      name.textContent = formatShortLevel(record.level);
+
+      const score = document.createElement("strong");
+      score.textContent = `${record.bestAccuracy}%`;
+
+      const meta = document.createElement("span");
+      meta.textContent = `${record.runs} runs`;
+
+      item.append(name, score, meta);
+      return item;
+    }),
+  );
+}
+
+function renderHistory() {
+  if (state.progress.runs.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No saved runs yet.";
+    elements.historyList.replaceChildren(empty);
+    return;
+  }
+
+  elements.historyList.replaceChildren(
+    ...state.progress.runs.slice(0, 8).map((run) => {
+      const item = document.createElement("article");
+      item.className = "history-item";
+
+      const main = document.createElement("div");
+      const title = document.createElement("strong");
+      title.textContent = run.levelLabel || formatLevel(LEVELS[run.levelIndex]);
+      const date = document.createElement("span");
+      date.textContent = formatDate(run.completedAt);
+      main.append(title, date);
+
+      const score = document.createElement("div");
+      score.className = "history-score";
+      score.textContent = `${run.accuracy || 0}%`;
+
+      const detail = document.createElement("span");
+      detail.textContent = `${run.correct}/${run.rounds || TOTAL_ROUNDS} correct`;
+      score.append(detail);
+
+      item.append(main, score);
+      return item;
+    }),
+  );
+}
+
+function calculateAccuracy(correct, total) {
+  return total ? Math.round((correct / total) * 100) : 0;
 }
 
 function formatLevel(level) {
   return `${level.speedLabel} ${level.nBack}-back`;
+}
+
+function formatShortLevel(level) {
+  return `${level.speedLabel[0]}${level.nBack}`;
+}
+
+function formatDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "Saved run";
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
 }
 
 function prettyPhase(phase) {
