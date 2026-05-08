@@ -7,7 +7,7 @@
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
     />
     <title>N-Back Math</title>
-    <link rel="stylesheet" href="style.css?v=20260508a" />
+    <link rel="stylesheet" href="style.css?v=20260508d" />
   </head>
   <body>
     <main class="shell">
@@ -15,6 +15,7 @@
         <div class="hero-row">
           <div class="hero-copy">
             <h1>N-Back Math</h1>
+            <p class="current-level" id="current-level-label">Slow 1-back</p>
           </div>
 
           <div class="top-actions">
@@ -84,43 +85,27 @@
           </button>
         </div>
 
-        <div class="controls-grid">
-          <label>
-            <span>N Level</span>
-            <select id="n-level">
-              <option value="1" selected>1-back</option>
-              <option value="2">2-back</option>
-              <option value="3">3-back</option>
-              <option value="4">4-back</option>
-              <option value="5">5-back</option>
-              <option value="6">6-back</option>
-              <option value="7">7-back</option>
-              <option value="8">8-back</option>
-              <option value="9">9-back</option>
-              <option value="10">10-back</option>
-              <option value="11">11-back</option>
-              <option value="12">12-back</option>
-            </select>
-          </label>
-
-          <label>
-            <span>Scored Rounds</span>
-            <select id="rounds">
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="24" selected>24</option>
-              <option value="30">30</option>
-            </select>
-          </label>
-
-          <label>
-            <span>Speed</span>
-            <select id="answer-ms">
-              <option value="4000" selected>Slow</option>
-              <option value="3000">Fast</option>
-            </select>
-          </label>
+        <div class="level-stepper" aria-label="Game level">
+          <button
+            class="level-button"
+            id="level-down-btn"
+            type="button"
+            aria-label="Decrease level"
+          >
+            -
+          </button>
+          <div class="level-readout">
+            <span>Level</span>
+            <strong id="level-value">Slow 1-back</strong>
+          </div>
+          <button
+            class="level-button"
+            id="level-up-btn"
+            type="button"
+            aria-label="Increase level"
+          >
+            +
+          </button>
         </div>
 
         <section class="settings-results">
@@ -159,6 +144,6 @@
       </section>
     </main>
 
-    <script src="app.js?v=20260508b"></script>
+    <script src="app.js?v=20260508e"></script>
   </body>
 </html>

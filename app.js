@@ -2,6 +2,7 @@ const elements = {
   resultBadge: document.getElementById("result-badge"),
   phaseBadge: document.getElementById("phase-badge"),
   problemDisplay: document.getElementById("problem-display"),
+  currentLevelLabel: document.getElementById("current-level-label"),
   timerFill: document.getElementById("timer-fill"),
   answerValue: document.getElementById("answer-value"),
   clearButton: document.getElementById("clear-btn"),
@@ -19,18 +20,30 @@ const elements = {
   closeSettingsButton: document.getElementById("close-settings-btn"),
   settingsSheet: document.getElementById("settings-sheet"),
   settingsScrim: document.getElementById("settings-scrim"),
-  nLevel: document.getElementById("n-level"),
-  rounds: document.getElementById("rounds"),
-  answerMs: document.getElementById("answer-ms"),
+  levelDownButton: document.getElementById("level-down-btn"),
+  levelUpButton: document.getElementById("level-up-btn"),
+  levelValue: document.getElementById("level-value"),
 };
 
 const KEY_LAYOUT = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+const MAX_N_BACK = 12;
+const LEVELS = Array.from({ length: MAX_N_BACK * 2 }, (_, index) => {
+  const nBack = Math.floor(index / 2) + 1;
+  const isFast = index % 2 === 1;
+
+  return {
+    nBack,
+    speedLabel: isFast ? "Fast" : "Slow",
+    answerMs: isFast ? 3000 : 4000,
+  };
+});
 
 const state = {
   gameActive: false,
   acceptingAnswer: false,
   settingsOpen: false,
   phase: "idle",
+  levelIndex: 0,
   nBack: 1,
   totalRounds: 24,
   answerMs: 4000,
@@ -52,7 +65,7 @@ const state = {
 function init() {
   buildKeypad();
   bindEvents();
-  syncSettingsFromControls();
+  applyLevelSettings();
   render();
 }
 
@@ -85,13 +98,8 @@ function bindEvents() {
   elements.settingsButton.addEventListener("click", toggleSettings);
   elements.closeSettingsButton.addEventListener("click", closeSettings);
   elements.settingsScrim.addEventListener("click", closeSettings);
-
-  [elements.nLevel, elements.rounds, elements.answerMs].forEach((control) => {
-    control.addEventListener("change", () => {
-      syncSettingsFromControls();
-      render();
-    });
-  });
+  elements.levelDownButton.addEventListener("click", () => adjustLevel(-1));
+  elements.levelUpButton.addEventListener("click", () => adjustLevel(1));
 
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && state.settingsOpen) {
@@ -125,17 +133,36 @@ function closeSettings() {
   render();
 }
 
-function syncSettingsFromControls() {
-  state.nBack = Number(elements.nLevel.value);
-  state.totalRounds = Number(elements.rounds.value);
-  state.answerMs = Number(elements.answerMs.value);
+function adjustLevel(delta) {
+  if (state.gameActive) {
+    return;
+  }
+
+  const nextIndex = Math.min(
+    Math.max(state.levelIndex + delta, 0),
+    LEVELS.length - 1,
+  );
+
+  if (nextIndex === state.levelIndex) {
+    return;
+  }
+
+  state.levelIndex = nextIndex;
+  applyLevelSettings();
+  render();
+}
+
+function applyLevelSettings() {
+  const level = LEVELS[state.levelIndex];
+  state.nBack = level.nBack;
+  state.answerMs = level.answerMs;
 }
 
 function startGame() {
   clearAllTimers();
   stopTimerBar();
   state.settingsOpen = false;
-  syncSettingsFromControls();
+  applyLevelSettings();
 
   state.gameActive = true;
   state.acceptingAnswer = false;
@@ -388,9 +415,12 @@ function render() {
   elements.answerValue.textContent = visibleAnswer;
   elements.answerValue.classList.toggle("empty", state.currentAnswer === "");
 
-  [elements.nLevel, elements.rounds, elements.answerMs].forEach((control) => {
-    control.disabled = state.gameActive;
-  });
+  const level = LEVELS[state.levelIndex];
+  elements.currentLevelLabel.textContent = formatLevel(level);
+  elements.levelValue.textContent = formatLevel(level);
+  elements.levelDownButton.disabled = state.gameActive || state.levelIndex === 0;
+  elements.levelUpButton.disabled =
+    state.gameActive || state.levelIndex === LEVELS.length - 1;
 
   elements.startButton.disabled = state.gameActive;
   elements.settingsButton.setAttribute(
@@ -405,6 +435,10 @@ function render() {
   });
   elements.clearButton.disabled =
     !state.acceptingAnswer || state.currentAnswer === "";
+}
+
+function formatLevel(level) {
+  return `${level.speedLabel} ${level.nBack}-back`;
 }
 
 function prettyPhase(phase) {
