@@ -112,7 +112,11 @@ button:focus-visible {
   max-width: 840px;
   height: 100dvh;
   margin: 0 auto;
-  padding: 12px;
+  padding:
+    calc(12px + env(safe-area-inset-top))
+    calc(12px + env(safe-area-inset-right))
+    calc(12px + env(safe-area-inset-bottom))
+    calc(12px + env(safe-area-inset-left));
   display: grid;
   grid-template-rows: minmax(0, 1fr);
 }
@@ -828,7 +832,11 @@ body:not(.playing) .problem-display {
 
 @media (max-width: 720px) {
   .shell {
-    padding: 8px;
+    padding:
+      calc(8px + env(safe-area-inset-top))
+      calc(8px + env(safe-area-inset-right))
+      calc(8px + env(safe-area-inset-bottom))
+      calc(8px + env(safe-area-inset-left));
     gap: 8px;
   }
 
