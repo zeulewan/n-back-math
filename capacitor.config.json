@@ -1,0 +1,8 @@
+{
+  "appId": "com.zeulewan.nbackmath",
+  "appName": "N-Back Math",
+  "webDir": "dist",
+  "server": {
+    "iosScheme": "nbackmath"
+  }
+}
