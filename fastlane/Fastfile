@@ -1,0 +1,97 @@
+opt_out_usage
+
+default_platform(:ios)
+
+platform :ios do
+  private_lane :api_key do
+    app_store_connect_api_key(
+      key_id: ENV.fetch("APP_STORE_CONNECT_KEY_ID"),
+      issuer_id: ENV.fetch("APP_STORE_CONNECT_ISSUER_ID"),
+      key_filepath: ENV.fetch("APP_STORE_CONNECT_KEY_PATH"),
+      duration: 1200,
+      in_house: false
+    )
+  end
+
+  desc "Create the App Store Connect app if it does not exist"
+  lane :create_app do
+    api_key
+    produce(
+      app_identifier: "com.zeulewan.nbackmath",
+      app_name: "N-Back Math",
+      sku: "n-back-math",
+      language: "English",
+      app_version: "1.0",
+      platform: "ios",
+      team_id: "25QMAKVCBN",
+      skip_itc: false
+    )
+  end
+
+  desc "Build and upload to App Store Connect"
+  lane :upload do
+    sh("npm", "run", "sync:ios")
+    auth_args = "-authenticationKeyPath #{ENV.fetch('APP_STORE_CONNECT_KEY_PATH')} -authenticationKeyID #{ENV.fetch('APP_STORE_CONNECT_KEY_ID')} -authenticationKeyIssuerID #{ENV.fetch('APP_STORE_CONNECT_ISSUER_ID')}"
+
+    build_app(
+      project: "ios/App/App.xcodeproj",
+      scheme: "App",
+      configuration: "Release",
+      archive_path: "ios/build/appstore/NBackMath.xcarchive",
+      output_directory: "ios/build/appstore",
+      output_name: "NBackMath",
+      export_method: "app-store",
+      export_options: {
+        method: "app-store-connect",
+        teamID: "25QMAKVCBN",
+        signingStyle: "automatic",
+        manageAppVersionAndBuildNumber: false,
+        destination: "upload"
+      },
+      xcargs: "-allowProvisioningUpdates #{auth_args}",
+      export_xcargs: "-allowProvisioningUpdates"
+    )
+
+    upload_to_app_store(
+      api_key: api_key,
+      app_identifier: "com.zeulewan.nbackmath",
+      app_version: "1.0",
+      ipa: "ios/build/appstore/NBackMath.ipa",
+      skip_metadata: true,
+      skip_screenshots: true,
+      skip_app_version_update: false,
+      submit_for_review: false,
+      automatic_release: false
+    )
+  end
+
+  desc "Submit the latest uploaded build for review"
+  lane :submit do
+    deliver(
+      api_key: api_key,
+      app_identifier: "com.zeulewan.nbackmath",
+      app_version: "1.0",
+      release_notes: {
+        "en-US" => "Initial App Store release."
+      },
+      skip_binary_upload: true,
+      skip_screenshots: true,
+      submit_for_review: true,
+      automatic_release: true,
+      force: true,
+      submission_information: {
+        add_id_info_uses_idfa: false,
+        export_compliance_uses_encryption: false,
+        export_compliance_encryption_updated: false,
+        content_rights_contains_third_party_content: false
+      }
+    )
+  end
+
+  desc "Create app, upload, then submit"
+  lane :ship do
+    create_app
+    upload
+    submit
+  end
+end
