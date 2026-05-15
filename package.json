@@ -5,6 +5,8 @@
   "description": "Mobile-first arithmetic n-back trainer.",
   "scripts": {
     "build": "node scripts/build-web.js",
+    "generate:icon": "scripts/generate-icon.sh",
+    "generate:screenshots": "scripts/generate-app-store-screenshots.sh",
     "sync:ios": "npm run build && cap sync ios",
     "open:ios": "npm run sync:ios && cap open ios"
   },

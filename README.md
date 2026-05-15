@@ -13,6 +13,8 @@ Build and open the iOS project on a Mac with Xcode:
 
 ```sh
 npm install
+npm run generate:icon
+npm run generate:screenshots
 npm run open:ios
 ```
 
@@ -31,3 +33,8 @@ project.
 
 Progress is stored in browser `localStorage`. Use `Clear Progress` on the
 stats page to reset it.
+
+## Privacy
+
+N-Back Math does not collect personal data. Progress stays on-device in browser
+or app storage. Privacy policy: https://zeulewan.github.io/n-back-math/privacy.html

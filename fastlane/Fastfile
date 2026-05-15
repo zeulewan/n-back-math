@@ -20,10 +20,11 @@ platform :ios do
       app_identifier: "com.zeulewan.nbackmath",
       app_name: "N-Back Math",
       sku: "n-back-math",
-      language: "English",
+      language: "en-US",
       app_version: "1.0",
       platform: "ios",
       team_id: "25QMAKVCBN",
+      itc_team_id: "128577102",
       skip_itc: false
     )
   end
@@ -52,33 +53,55 @@ platform :ios do
       export_xcargs: "-allowProvisioningUpdates"
     )
 
-    upload_to_app_store(
-      api_key: api_key,
-      app_identifier: "com.zeulewan.nbackmath",
-      app_version: "1.0",
-      ipa: "ios/build/appstore/NBackMath.ipa",
-      skip_metadata: true,
-      skip_screenshots: true,
-      skip_app_version_update: false,
-      submit_for_review: false,
-      automatic_release: false
-    )
+    UI.success("Archive exported and uploaded through xcodebuild.")
   end
 
   desc "Submit the latest uploaded build for review"
   lane :submit do
+    upload_app_privacy_details_to_app_store(
+      username: "zeul@mordasiewicz.com",
+      app_identifier: "com.zeulewan.nbackmath",
+      team_id: "128577102",
+      json_path: "fastlane/metadata/app_privacy_details.json"
+    )
+
     deliver(
       api_key: api_key,
       app_identifier: "com.zeulewan.nbackmath",
       app_version: "1.0",
+      name: {
+        "en-US" => "N-Back Math"
+      },
+      description: {
+        "en-US" => "Train working memory with fast arithmetic n-back rounds. N-Back Math shows a stream of arithmetic problems and asks you to answer the result from N steps back. Each run is short, focused, and saved locally so you can track accuracy over time."
+      },
+      keywords: {
+        "en-US" => "n-back,math,arithmetic,memory,brain training,focus,practice"
+      },
+      support_url: {
+        "en-US" => "https://github.com/zeulewan/n-back-math"
+      },
+      marketing_url: {
+        "en-US" => "https://zeulewan.github.io/n-back-math/"
+      },
+      privacy_url: {
+        "en-US" => "https://zeulewan.github.io/n-back-math/privacy.html"
+      },
       release_notes: {
         "en-US" => "Initial App Store release."
       },
       skip_binary_upload: true,
-      skip_screenshots: true,
+      skip_screenshots: false,
+      overwrite_screenshots: true,
+      screenshots_path: "fastlane/screenshots",
       submit_for_review: true,
       automatic_release: true,
       force: true,
+      copyright: "2026 Zeulewan Mordasiewicz",
+      primary_category: "Education",
+      price_tier: 0,
+      app_rating_config_path: "fastlane/metadata/rating_config.json",
+      precheck_include_in_app_purchases: false,
       submission_information: {
         add_id_info_uses_idfa: false,
         export_compliance_uses_encryption: false,
