@@ -32,9 +32,16 @@
 - Age rating answers are tracked in `fastlane/metadata/rating_config.json`.
   This app declares no restricted content, no ads, no user-generated content,
   no chat, no tracking, and no unrestricted web access.
-- Required App Store screenshots are generated from `assets/screenshot.png` with
-  `npm run generate:screenshots`. The current targets are iPhone 6.5-inch
-  landscape (`2688x1242`) and iPad Pro 12.9-inch landscape (`2732x2048`).
+- Required App Store screenshots are generated with
+  `npm run generate:screenshots`. The iPhone 6.5-inch screenshot is a portrait
+  headless Chrome render (`1242x2688`), not a rotated/cropped landscape image.
+  The iPad Pro 12.9-inch screenshot is generated from `assets/screenshot.png`
+  as landscape (`2732x2048`).
+- Screenshot-only metadata fixes can be uploaded with
+  `fastlane ios screenshots`; this lane skips binary upload, skips text
+  metadata, edits the live version instead of creating a duplicate version,
+  disables Fastlane precheck, does not submit for review, and overwrites
+  screenshots from `fastlane/screenshots`.
 - The iOS app icon is generated with `npm run generate:icon` and writes
   `ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png`.
 - Bump `CURRENT_PROJECT_VERSION` before re-uploading the same marketing version;

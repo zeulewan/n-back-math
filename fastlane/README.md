@@ -39,6 +39,14 @@ Build and upload to App Store Connect
 
 Submit the latest uploaded build for review
 
+### ios screenshots
+
+```sh
+[bundle exec] fastlane ios screenshots
+```
+
+Upload App Store screenshots only
+
 ### ios ship
 
 ```sh
