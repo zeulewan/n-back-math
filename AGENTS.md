@@ -39,3 +39,12 @@
   `ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png`.
 - Bump `CURRENT_PROJECT_VERSION` before re-uploading the same marketing version;
   Apple rejects duplicate build numbers.
+- A version can be `READY_FOR_SALE` while EU storefronts are still blocked by
+  DSA trader status. Check availability with:
+  `applship api get '/v2/appAvailabilities/APP_ID/territoryAvailabilities?limit=200'`.
+  For N-Back Math, App Store Connect showed 148 territories as `AVAILABLE` and
+  the 27 EU territories as `TRADER_STATUS_NOT_PROVIDED` on 2026-05-18.
+- DSA trader status is account/app compliance, not binary review. Apple’s docs
+  say the Account Holder/Admin must declare trader status in App Store Connect,
+  and Apple says it can’t decide trader status for the developer. If not
+  distributing in the EU, the app is not acting as a trader on the App Store.
