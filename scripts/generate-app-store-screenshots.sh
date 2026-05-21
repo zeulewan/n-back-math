@@ -62,13 +62,13 @@ capture_device() {
     exit 1
   fi
 
+  echo "Capturing $output_name on $device_name ($udid)"
   xcrun simctl boot "$udid" >/dev/null 2>&1 || true
-  xcrun simctl bootstatus "$udid" -b >/dev/null
   xcrun simctl ui "$udid" appearance dark >/dev/null 2>&1 || true
-  sleep 8
+  sleep 20
   xcrun simctl install "$udid" "$APP_PATH"
   xcrun simctl launch "$udid" "$BUNDLE_ID" "${launch_args[@]}" >/dev/null
-  sleep 5
+  sleep 8
   xcrun simctl io "$udid" screenshot "$OUT/$output_name"
   xcrun simctl terminate "$udid" "$BUNDLE_ID" >/dev/null 2>&1 || true
 }
@@ -76,6 +76,7 @@ capture_device() {
 mkdir -p "$OUT"
 rm -f "$OUT"/*.png
 
+echo "Building native app for screenshots"
 xcodebuild \
   -project "$PROJECT" \
   -scheme "$SCHEME" \
