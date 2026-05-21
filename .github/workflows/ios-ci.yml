@@ -59,14 +59,14 @@ jobs:
           raw = subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "--json"])
           devices = json.loads(raw)["devices"]
           matches = [
-              device["name"]
+              device["udid"]
               for runtime_devices in devices.values()
               for device in runtime_devices
               if device.get("isAvailable") and "iPhone" in device["name"]
           ]
           if not matches:
               raise SystemExit("No available iPhone simulator found")
-          print(f"platform=iOS Simulator,name={matches[-1]}")
+          print(f"platform=iOS Simulator,id={matches[-1]}")
           PY
           )"
           xcodebuild test \
