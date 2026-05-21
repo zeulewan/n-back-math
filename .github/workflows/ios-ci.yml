@@ -53,22 +53,22 @@ jobs:
         run: |
           set -euo pipefail
           DESTINATION="$(python3 <<'PY'
-import json
-import subprocess
+          import json
+          import subprocess
 
-raw = subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "--json"])
-devices = json.loads(raw)["devices"]
-matches = [
-    device["name"]
-    for runtime_devices in devices.values()
-    for device in runtime_devices
-    if device.get("isAvailable") and "iPhone" in device["name"]
-]
-if not matches:
-    raise SystemExit("No available iPhone simulator found")
-print(f"platform=iOS Simulator,name={matches[-1]}")
-PY
-)"
+          raw = subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "--json"])
+          devices = json.loads(raw)["devices"]
+          matches = [
+              device["name"]
+              for runtime_devices in devices.values()
+              for device in runtime_devices
+              if device.get("isAvailable") and "iPhone" in device["name"]
+          ]
+          if not matches:
+              raise SystemExit("No available iPhone simulator found")
+          print(f"platform=iOS Simulator,name={matches[-1]}")
+          PY
+          )"
           xcodebuild test \
             -project ios/App/App.xcodeproj \
             -scheme App \
