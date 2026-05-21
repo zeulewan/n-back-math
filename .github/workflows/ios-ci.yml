@@ -77,9 +77,11 @@ jobs:
             CODE_SIGNING_ALLOWED=NO
 
       - name: Generate App Store screenshots
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.upload_to_app_store }}
         run: npm run generate:screenshots
 
       - name: Upload screenshot artifacts
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.upload_to_app_store }}
         uses: actions/upload-artifact@v4
         with:
           name: app-store-screenshots
