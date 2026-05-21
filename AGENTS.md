@@ -25,7 +25,7 @@
 - The preferred privacy URL is served by GitHub Pages from `main`, but Pages can
   sit in `building` and keep returning the old site for several minutes. If an
   App Store submission is blocked, use the public GitHub file URL as a fallback:
-  `https://github.com/zeulewan/n-back-math/blob/main/privacy.html`.
+  `https://github.com/zeulewan/n-back-math/blob/main/apps/web/privacy.html`.
 - App privacy details are tracked in
   `fastlane/metadata/app_privacy_details.json`. N-Back Math declares
   `DATA_NOT_COLLECTED`.
@@ -33,10 +33,15 @@
   This app declares no restricted content, no ads, no user-generated content,
   no chat, no tracking, and no unrestricted web access.
 - Required App Store screenshots are generated with
-  `npm run generate:screenshots`. The iPhone 6.5-inch screenshot is a portrait
-  headless Chrome render (`1242x2688`), not a rotated/cropped landscape image.
-  The iPad Pro 12.9-inch screenshot is generated from `assets/screenshot.png`
-  as landscape (`2732x2048`).
+  `npm run generate:screenshots`. The script builds the native SwiftUI app for
+  Simulator, launches it on an iPhone and iPad simulator, and writes PNG files
+  to `fastlane/screenshots/en-US`. It does not upload anything.
+- The browser app lives in `apps/web`; `npm run build:web` writes the GitHub
+  Pages artifact to `dist`.
+- The iOS app is native SwiftUI under `apps/ios/NBackMath`; `ios/App` only
+  contains the Xcode project, signing metadata, assets, and launch screen.
+- Do not run `fastlane ios upload`, `fastlane ios submit`, or
+  `fastlane ios ship` until screenshots have been generated and reviewed.
 - Screenshot-only metadata fixes can be uploaded with
   `fastlane ios screenshots`; this lane skips binary upload, skips text
   metadata, edits the live version instead of creating a duplicate version,

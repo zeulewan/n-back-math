@@ -1,0 +1,132 @@
+name: iOS CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - "ci/**"
+  workflow_dispatch:
+    inputs:
+      upload_to_app_store:
+        description: "Build and upload to App Store Connect"
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  build-test-screenshots:
+    name: Build, Test, Screenshots
+    runs-on: macos-26
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Show toolchain
+        run: |
+          sw_vers
+          xcodebuild -version
+          xcrun simctl list devicetypes | grep -E "iPhone|iPad" | tail -20
+          bundle exec fastlane --version
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Build web
+        run: npm run build
+
+      - name: Run iOS tests
+        run: |
+          set -euo pipefail
+          DESTINATION="$(python3 <<'PY'
+import json
+import subprocess
+
+raw = subprocess.check_output(["xcrun", "simctl", "list", "devices", "available", "--json"])
+devices = json.loads(raw)["devices"]
+matches = [
+    device["name"]
+    for runtime_devices in devices.values()
+    for device in runtime_devices
+    if device.get("isAvailable") and "iPhone" in device["name"]
+]
+if not matches:
+    raise SystemExit("No available iPhone simulator found")
+print(f"platform=iOS Simulator,name={matches[-1]}")
+PY
+)"
+          xcodebuild test \
+            -project ios/App/App.xcodeproj \
+            -scheme App \
+            -configuration Debug \
+            -destination "$DESTINATION" \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Generate App Store screenshots
+        run: npm run generate:screenshots
+
+      - name: Upload screenshot artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-store-screenshots
+          path: fastlane/screenshots/en-US/*.png
+          if-no-files-found: error
+
+  app-store-upload:
+    name: App Store Upload
+    runs-on: macos-26
+    timeout-minutes: 45
+    needs: build-test-screenshots
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.upload_to_app_store }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Write App Store Connect key
+        env:
+          APP_STORE_CONNECT_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${APP_STORE_CONNECT_KEY_CONTENT}" ]]; then
+            echo "Missing APP_STORE_CONNECT_KEY_CONTENT secret" >&2
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/app-store-connect"
+          printf '%s' "$APP_STORE_CONNECT_KEY_CONTENT" > "$RUNNER_TEMP/app-store-connect/AuthKey.p8"
+
+      - name: Build and upload to App Store Connect
+        env:
+          APP_STORE_CONNECT_KEY_ID: ${{ secrets.APP_STORE_CONNECT_KEY_ID }}
+          APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
+          APP_STORE_CONNECT_KEY_PATH: ${{ runner.temp }}/app-store-connect/AuthKey.p8
+        run: bundle exec fastlane ios upload

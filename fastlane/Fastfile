@@ -31,7 +31,7 @@ platform :ios do
 
   desc "Build and upload to App Store Connect"
   lane :upload do
-    sh("npm", "run", "sync:ios")
+    sh("npm", "run", "generate:icon")
     auth_args = "-authenticationKeyPath #{ENV.fetch('APP_STORE_CONNECT_KEY_PATH')} -authenticationKeyID #{ENV.fetch('APP_STORE_CONNECT_KEY_ID')} -authenticationKeyIssuerID #{ENV.fetch('APP_STORE_CONNECT_ISSUER_ID')}"
 
     build_app(
@@ -85,7 +85,7 @@ platform :ios do
         "en-US" => "https://zeulewan.github.io/n-back-math/"
       },
       privacy_url: {
-        "en-US" => "https://github.com/zeulewan/n-back-math/blob/main/privacy.html"
+        "en-US" => "https://zeulewan.github.io/n-back-math/privacy.html"
       },
       release_notes: {
         "en-US" => "Initial App Store release."

@@ -4,17 +4,10 @@
   "private": true,
   "description": "Mobile-first arithmetic n-back trainer.",
   "scripts": {
-    "build": "node scripts/build-web.js",
+    "build": "npm run build:web",
+    "build:web": "node scripts/build-web.js",
     "generate:icon": "scripts/generate-icon.sh",
     "generate:screenshots": "scripts/generate-app-store-screenshots.sh",
-    "sync:ios": "npm run build && cap sync ios",
-    "open:ios": "npm run sync:ios && cap open ios"
-  },
-  "dependencies": {
-    "@capacitor/core": "^8.3.3",
-    "@capacitor/ios": "^8.3.3"
-  },
-  "devDependencies": {
-    "@capacitor/cli": "^8.3.3"
+    "open:ios": "open ios/App/App.xcodeproj"
   }
 }

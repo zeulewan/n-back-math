@@ -7,27 +7,83 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
-		4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */ = {isa = PBXBuildFile; productRef = 4D22ABE82AF431CB00220026 /* CapApp-SPM */; };
-		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
-		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
-		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
-		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		A10000000000000000000001 /* NBackMathApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000001 /* NBackMathApp.swift */; };
+		A10000000000000000000002 /* AppTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000002 /* AppTheme.swift */; };
+		A10000000000000000000003 /* GameSpeed.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000003 /* GameSpeed.swift */; };
+		A10000000000000000000004 /* GameLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000004 /* GameLevel.swift */; };
+		A10000000000000000000005 /* GamePhase.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000005 /* GamePhase.swift */; };
+		A10000000000000000000006 /* GameOutcome.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000006 /* GameOutcome.swift */; };
+		A10000000000000000000007 /* ProblemOperator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000007 /* ProblemOperator.swift */; };
+		A10000000000000000000008 /* MathProblem.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000008 /* MathProblem.swift */; };
+		A10000000000000000000009 /* RunRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000009 /* RunRecord.swift */; };
+		A1000000000000000000000A /* GameProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000A /* GameProgress.swift */; };
+		A1000000000000000000000B /* LevelRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000B /* LevelRecord.swift */; };
+		A1000000000000000000000C /* ProgressStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000C /* ProgressStore.swift */; };
+		A1000000000000000000000D /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000D /* GameViewModel.swift */; };
+		A1000000000000000000000E /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000E /* RootView.swift */; };
+		A1000000000000000000000F /* GameScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2000000000000000000000F /* GameScreen.swift */; };
+		A10000000000000000000010 /* LevelStepperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000010 /* LevelStepperView.swift */; };
+		A10000000000000000000011 /* ProblemScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000011 /* ProblemScreenView.swift */; };
+		A10000000000000000000012 /* AnswerPadView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000012 /* AnswerPadView.swift */; };
+		A10000000000000000000013 /* FinishSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000013 /* FinishSummaryView.swift */; };
+		A10000000000000000000014 /* StatsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000014 /* StatsGridView.swift */; };
+		A10000000000000000000015 /* StatsScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000015 /* StatsScreen.swift */; };
+		A10000000000000000000016 /* LevelMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000016 /* LevelMapView.swift */; };
+		A10000000000000000000017 /* HistoryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000017 /* HistoryListView.swift */; };
+		A10000000000000000000019 /* KeypadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A20000000000000000000019 /* KeypadButton.swift */; };
+		A40000000000000000000001 /* GameLevelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60000000000000000000001 /* GameLevelTests.swift */; };
+		A40000000000000000000002 /* MathProblemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60000000000000000000002 /* MathProblemTests.swift */; };
+		A40000000000000000000003 /* ProgressStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60000000000000000000003 /* ProgressStoreTests.swift */; };
+		A40000000000000000000004 /* GameViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A60000000000000000000004 /* GameViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		A50000000000000000000005 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 504EC2FC1FED79650016851F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 504EC3031FED79650016851F;
+			remoteInfo = App;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
-		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
-		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		504EC30C1FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		504EC30E1FED79650016851F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
 		958DCC722DB07C7200EA8C5F /* debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = debug.xcconfig; path = ../debug.xcconfig; sourceTree = SOURCE_ROOT; };
+		A20000000000000000000001 /* NBackMathApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NBackMathApp.swift; sourceTree = "<group>"; };
+		A20000000000000000000002 /* AppTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTheme.swift; sourceTree = "<group>"; };
+		A20000000000000000000003 /* GameSpeed.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameSpeed.swift; sourceTree = "<group>"; };
+		A20000000000000000000004 /* GameLevel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLevel.swift; sourceTree = "<group>"; };
+		A20000000000000000000005 /* GamePhase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GamePhase.swift; sourceTree = "<group>"; };
+		A20000000000000000000006 /* GameOutcome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameOutcome.swift; sourceTree = "<group>"; };
+		A20000000000000000000007 /* ProblemOperator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemOperator.swift; sourceTree = "<group>"; };
+		A20000000000000000000008 /* MathProblem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathProblem.swift; sourceTree = "<group>"; };
+		A20000000000000000000009 /* RunRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RunRecord.swift; sourceTree = "<group>"; };
+		A2000000000000000000000A /* GameProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameProgress.swift; sourceTree = "<group>"; };
+		A2000000000000000000000B /* LevelRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelRecord.swift; sourceTree = "<group>"; };
+		A2000000000000000000000C /* ProgressStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStore.swift; sourceTree = "<group>"; };
+		A2000000000000000000000D /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		A2000000000000000000000E /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		A2000000000000000000000F /* GameScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScreen.swift; sourceTree = "<group>"; };
+		A20000000000000000000010 /* LevelStepperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelStepperView.swift; sourceTree = "<group>"; };
+		A20000000000000000000011 /* ProblemScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProblemScreenView.swift; sourceTree = "<group>"; };
+		A20000000000000000000012 /* AnswerPadView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnswerPadView.swift; sourceTree = "<group>"; };
+		A20000000000000000000013 /* FinishSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinishSummaryView.swift; sourceTree = "<group>"; };
+		A20000000000000000000014 /* StatsGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsGridView.swift; sourceTree = "<group>"; };
+		A20000000000000000000015 /* StatsScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsScreen.swift; sourceTree = "<group>"; };
+		A20000000000000000000016 /* LevelMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LevelMapView.swift; sourceTree = "<group>"; };
+		A20000000000000000000017 /* HistoryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryListView.swift; sourceTree = "<group>"; };
+		A20000000000000000000019 /* KeypadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeypadButton.swift; sourceTree = "<group>"; };
+		A60000000000000000000000 /* AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A60000000000000000000001 /* GameLevelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameLevelTests.swift; sourceTree = "<group>"; };
+		A60000000000000000000002 /* MathProblemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathProblemTests.swift; sourceTree = "<group>"; };
+		A60000000000000000000003 /* ProgressStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressStoreTests.swift; sourceTree = "<group>"; };
+		A60000000000000000000004 /* GameViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,7 +91,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4D22ABE92AF431CB00220026 /* CapApp-SPM in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A50000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +108,8 @@
 			isa = PBXGroup;
 			children = (
 				958DCC722DB07C7200EA8C5F /* debug.xcconfig */,
+				A30000000000000000000001 /* NBackMath */,
+				A60000000000000000000005 /* NBackMathTests */,
 				504EC3061FED79650016851F /* App */,
 				504EC3051FED79650016851F /* Products */,
 			);
@@ -55,6 +119,7 @@
 			isa = PBXGroup;
 			children = (
 				504EC3041FED79650016851F /* App.app */,
+				A60000000000000000000000 /* AppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -62,16 +127,127 @@
 		504EC3061FED79650016851F /* App */ = {
 			isa = PBXGroup;
 			children = (
-				50379B222058CBB4000EE86E /* capacitor.config.json */,
-				504EC3071FED79650016851F /* AppDelegate.swift */,
-				504EC30B1FED79650016851F /* Main.storyboard */,
 				504EC30E1FED79650016851F /* Assets.xcassets */,
 				504EC3101FED79650016851F /* LaunchScreen.storyboard */,
 				504EC3131FED79650016851F /* Info.plist */,
-				2FAD9762203C412B000D30F8 /* config.xml */,
-				50B271D01FEDC1A000F3C39B /* public */,
 			);
 			path = App;
+			sourceTree = "<group>";
+		};
+		504EC3101FED79650016851F /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				504EC3111FED79650016851F /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000001 /* NBackMath */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000001 /* NBackMathApp.swift */,
+				A30000000000000000000002 /* Design */,
+				A30000000000000000000003 /* Models */,
+				A30000000000000000000004 /* Persistence */,
+				A30000000000000000000005 /* ViewModels */,
+				A30000000000000000000006 /* Views */,
+			);
+			name = NBackMath;
+			path = ../../apps/ios/NBackMath;
+			sourceTree = SOURCE_ROOT;
+		};
+		A30000000000000000000002 /* Design */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000002 /* AppTheme.swift */,
+			);
+			path = Design;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000003 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A20000000000000000000003 /* GameSpeed.swift */,
+				A20000000000000000000004 /* GameLevel.swift */,
+				A20000000000000000000005 /* GamePhase.swift */,
+				A20000000000000000000006 /* GameOutcome.swift */,
+				A20000000000000000000007 /* ProblemOperator.swift */,
+				A20000000000000000000008 /* MathProblem.swift */,
+				A20000000000000000000009 /* RunRecord.swift */,
+				A2000000000000000000000A /* GameProgress.swift */,
+				A2000000000000000000000B /* LevelRecord.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000004 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000C /* ProgressStore.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000005 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000D /* GameViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A30000000000000000000006 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A2000000000000000000000E /* RootView.swift */,
+				A2000000000000000000000F /* GameScreen.swift */,
+				A20000000000000000000010 /* LevelStepperView.swift */,
+				A20000000000000000000011 /* ProblemScreenView.swift */,
+				A20000000000000000000012 /* AnswerPadView.swift */,
+				A20000000000000000000019 /* KeypadButton.swift */,
+				A20000000000000000000013 /* FinishSummaryView.swift */,
+				A20000000000000000000014 /* StatsGridView.swift */,
+				A20000000000000000000015 /* StatsScreen.swift */,
+				A20000000000000000000016 /* LevelMapView.swift */,
+				A20000000000000000000017 /* HistoryListView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A60000000000000000000005 /* NBackMathTests */ = {
+			isa = PBXGroup;
+			children = (
+				A60000000000000000000006 /* Models */,
+				A60000000000000000000007 /* Persistence */,
+				A60000000000000000000008 /* ViewModels */,
+			);
+			name = NBackMathTests;
+			path = ../../apps/ios/NBackMathTests;
+			sourceTree = SOURCE_ROOT;
+		};
+		A60000000000000000000006 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A60000000000000000000001 /* GameLevelTests.swift */,
+				A60000000000000000000002 /* MathProblemTests.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A60000000000000000000007 /* Persistence */ = {
+			isa = PBXGroup;
+			children = (
+				A60000000000000000000003 /* ProgressStoreTests.swift */,
+			);
+			path = Persistence;
+			sourceTree = "<group>";
+		};
+		A60000000000000000000008 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A60000000000000000000004 /* GameViewModelTests.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -91,11 +267,30 @@
 			);
 			name = App;
 			packageProductDependencies = (
-				4D22ABE82AF431CB00220026 /* CapApp-SPM */,
 			);
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* App.app */;
 			productType = "com.apple.product-type.application";
+		};
+		A50000000000000000000001 /* AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A50000000000000000000009 /* Build configuration list for PBXNativeTarget "AppTests" */;
+			buildPhases = (
+				A50000000000000000000003 /* Sources */,
+				A50000000000000000000002 /* Frameworks */,
+				A50000000000000000000004 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A50000000000000000000006 /* PBXTargetDependency */,
+			);
+			name = AppTests;
+			packageProductDependencies = (
+			);
+			productName = AppTests;
+			productReference = A60000000000000000000000 /* AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -104,18 +299,21 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastSwiftUpdateCheck = 0920;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					504EC3031FED79650016851F = {
-						CreatedOnToolsVersion = 9.2;
-						LastSwiftMigration = 1100;
+						CreatedOnToolsVersion = 26.0;
 						ProvisioningStyle = Automatic;
+					};
+					A50000000000000000000001 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = 504EC3031FED79650016851F;
 					};
 				};
 			};
 			buildConfigurationList = 504EC2FF1FED79650016851F /* Build configuration list for PBXProject "App" */;
-			compatibilityVersion = "Xcode 8.0";
+			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -124,13 +322,13 @@
 			);
 			mainGroup = 504EC2FB1FED79650016851F;
 			packageReferences = (
-				D4C12C0A2AAA248700AAC8A2 /* XCLocalSwiftPackageReference "CapApp-SPM" */,
 			);
 			productRefGroup = 504EC3051FED79650016851F /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				504EC3031FED79650016851F /* App */,
+				A50000000000000000000001 /* AppTests */,
 			);
 		};
 /* End PBXProject section */
@@ -141,11 +339,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
-				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
-				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
-				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
-				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A50000000000000000000004 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -156,29 +357,55 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				504EC3081FED79650016851F /* AppDelegate.swift in Sources */,
+				A10000000000000000000001 /* NBackMathApp.swift in Sources */,
+				A10000000000000000000002 /* AppTheme.swift in Sources */,
+				A10000000000000000000003 /* GameSpeed.swift in Sources */,
+				A10000000000000000000004 /* GameLevel.swift in Sources */,
+				A10000000000000000000005 /* GamePhase.swift in Sources */,
+				A10000000000000000000006 /* GameOutcome.swift in Sources */,
+				A10000000000000000000007 /* ProblemOperator.swift in Sources */,
+				A10000000000000000000008 /* MathProblem.swift in Sources */,
+				A10000000000000000000009 /* RunRecord.swift in Sources */,
+				A1000000000000000000000A /* GameProgress.swift in Sources */,
+				A1000000000000000000000B /* LevelRecord.swift in Sources */,
+				A1000000000000000000000C /* ProgressStore.swift in Sources */,
+				A1000000000000000000000D /* GameViewModel.swift in Sources */,
+				A1000000000000000000000E /* RootView.swift in Sources */,
+				A1000000000000000000000F /* GameScreen.swift in Sources */,
+				A10000000000000000000010 /* LevelStepperView.swift in Sources */,
+				A10000000000000000000011 /* ProblemScreenView.swift in Sources */,
+				A10000000000000000000012 /* AnswerPadView.swift in Sources */,
+				A10000000000000000000013 /* FinishSummaryView.swift in Sources */,
+				A10000000000000000000014 /* StatsGridView.swift in Sources */,
+				A10000000000000000000015 /* StatsScreen.swift in Sources */,
+				A10000000000000000000016 /* LevelMapView.swift in Sources */,
+				A10000000000000000000017 /* HistoryListView.swift in Sources */,
+				A10000000000000000000019 /* KeypadButton.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A50000000000000000000003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A40000000000000000000001 /* GameLevelTests.swift in Sources */,
+				A40000000000000000000002 /* MathProblemTests.swift in Sources */,
+				A40000000000000000000003 /* ProgressStoreTests.swift in Sources */,
+				A40000000000000000000004 /* GameViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		A50000000000000000000006 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 504EC3031FED79650016851F /* App */;
+			targetProxy = A50000000000000000000005 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
-		504EC30B1FED79650016851F /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				504EC30C1FED79650016851F /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		504EC3101FED79650016851F /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				504EC3111FED79650016851F /* Base */,
-			);
-			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
@@ -189,7 +416,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -215,14 +442,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 25QMAKVCBN;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -236,8 +461,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				MTL_ENABLE_DEBUG_INFO = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -252,7 +477,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -278,14 +503,12 @@
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 25QMAKVCBN;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
@@ -293,7 +516,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -310,16 +533,17 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 25QMAKVCBN;
+				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = App/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.zeulewan.nbackmath;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = App;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -332,18 +556,67 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = 25QMAKVCBN;
 				INFOPLIST_FILE = App/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zeulewan.nbackmath;
+				PRODUCT_NAME = App;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		A50000000000000000000007 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 25QMAKVCBN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zeulewan.nbackmath.tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/App";
+			};
+			name = Debug;
+		};
+		A50000000000000000000008 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 25QMAKVCBN;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zeulewan.nbackmath.tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/App";
 			};
 			name = Release;
 		};
@@ -368,22 +641,16 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		A50000000000000000000009 /* Build configuration list for PBXNativeTarget "AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A50000000000000000000007 /* Debug */,
+				A50000000000000000000008 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		D4C12C0A2AAA248700AAC8A2 /* XCLocalSwiftPackageReference "CapApp-SPM" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = "CapApp-SPM";
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		4D22ABE82AF431CB00220026 /* CapApp-SPM */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D4C12C0A2AAA248700AAC8A2 /* XCLocalSwiftPackageReference "CapApp-SPM" */;
-			productName = "CapApp-SPM";
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 504EC2FC1FED79650016851F /* Project object */;
 }
