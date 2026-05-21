@@ -58,12 +58,14 @@ platform :ios do
 
   desc "Submit the latest uploaded build for review"
   lane :submit do
-    upload_app_privacy_details_to_app_store(
-      username: "zeul@mordasiewicz.com",
-      app_identifier: "com.zeulewan.nbackmath",
-      team_id: "128577102",
-      json_path: "fastlane/metadata/app_privacy_details.json"
-    )
+    unless ENV["SKIP_APP_PRIVACY_UPLOAD"] == "1"
+      upload_app_privacy_details_to_app_store(
+        username: "zeul@mordasiewicz.com",
+        app_identifier: "com.zeulewan.nbackmath",
+        team_id: "128577102",
+        json_path: "fastlane/metadata/app_privacy_details.json"
+      )
+    end
 
     deliver(
       api_key: api_key,
