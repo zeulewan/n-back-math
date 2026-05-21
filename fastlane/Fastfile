@@ -21,7 +21,7 @@ platform :ios do
       app_name: "N-Back Math",
       sku: "n-back-math",
       language: "en-US",
-      app_version: "1.0",
+      app_version: "1.1",
       platform: "ios",
       team_id: "25QMAKVCBN",
       itc_team_id: "128577102",
@@ -68,7 +68,7 @@ platform :ios do
     deliver(
       api_key: api_key,
       app_identifier: "com.zeulewan.nbackmath",
-      app_version: "1.0",
+      app_version: "1.1",
       name: {
         "en-US" => "N-Back Math"
       },
@@ -88,7 +88,7 @@ platform :ios do
         "en-US" => "https://zeulewan.github.io/n-back-math/privacy.html"
       },
       release_notes: {
-        "en-US" => "Initial App Store release."
+        "en-US" => "Refined the native iOS interface and App Store screenshots."
       },
       skip_binary_upload: true,
       skip_screenshots: false,
