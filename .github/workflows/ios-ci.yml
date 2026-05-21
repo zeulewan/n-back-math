@@ -112,6 +112,9 @@ jobs:
       - name: Install web dependencies
         run: npm ci
 
+      - name: Install ImageMagick
+        run: brew list imagemagick >/dev/null 2>&1 || brew install imagemagick
+
       - name: Write App Store Connect key
         env:
           APP_STORE_CONNECT_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_KEY_CONTENT }}
